@@ -1,6 +1,6 @@
 {
   "name": "swup-a11y-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Enhanced accessibility for swup-powered sites",
   "main": "lib/index.js",
   "scripts": {
