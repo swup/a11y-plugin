@@ -1,7 +1,7 @@
 {
   "name": "swup-a11y-plugin",
   "version": "0.1.0",
-  "description": "Enhance accessibility of swup-powered sites",
+  "description": "Enhanced accessibility for swup-powered sites",
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel --presets es2015,stage-0 -d lib/ src/",
