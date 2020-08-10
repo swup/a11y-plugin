@@ -1,6 +1,6 @@
 {
-  "name": "swup-a11y-plugin",
-  "version": "0.1.1",
+  "name": "@swup/a11y-plugin",
+  "version": "1.0.0",
   "description": "Enhanced accessibility for swup-powered sites",
   "main": "lib/index.js",
   "scripts": {
@@ -13,10 +13,17 @@
     "email": "daun@daun.ltd",
     "url": "https://philippdaun.net"
   },
+  "contributors": [
+    {
+      "name": "Georgy Marchuk",
+      "email": "gmarcuk@gmail.com",
+      "url": "https://gmrchk.com/"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/daun/swup-a11y-plugin.git"
+    "url": "https://github.com/swup/a11y-plugin.git"
   },
   "devDependencies": {
     "@swup/prettier-config": "^1.0.0",

@@ -1,5 +1,7 @@
 # Swup A11y Plugin
 
+**by [daun](https://github.com/daun)**
+
 Enhance the accessibility of your [swup](https://github.com/swup/swup)-powered
 sites.
 
@@ -17,13 +19,13 @@ That's exactly what this plugin does.
 This plugin can be installed with npm
 
 ```bash
-npm install swup-a11y-plugin
+npm install @swup/a11y-plugin
 ```
 
 and included with import
 
 ```shell
-import SwupA11yPlugin from 'swup-a11y-plugin';
+import SwupA11yPlugin from '@swup/a11y-plugin';
 ```
 
 or included from the dist folder
