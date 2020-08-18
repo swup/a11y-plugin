@@ -106,5 +106,4 @@ How to announce the new page title.
 
 How to announce the new page url.
 
-Only used as fallback if neither a title tag
-nor a heading were found.
+Only used as fallback if neither a title tag nor a heading were found.
