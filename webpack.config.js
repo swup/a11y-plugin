@@ -1,10 +1,7 @@
 const webpack = require('webpack');
 const baseConfig = require('@swup/webpack-config');
-const name = require('./package.json').name;
-const upperFirst = require('lodash/upperFirst');
-const camelCase = require('lodash/camelCase');
 
-const PascalCaseName = upperFirst(camelCase(name));
+const PascalCaseName = 'SwupA11yPlugin';
 
 const config = Object.assign({}, baseConfig, {
 	entry: {
