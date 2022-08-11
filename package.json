@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel --presets es2015,stage-0 -d lib/ src/",
-    "build": "webpack-cli && npm run lint",
+    "build": "webpack-cli",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run compile && npm run build"
   },
