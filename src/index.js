@@ -22,10 +22,14 @@ export default class SwupA11yPlugin extends Plugin {
 
 	mount() {
 		this.swup.on('contentReplaced', this.announceVisit);
+		this.swup.on('transitionStart', this.onTransitionStart);
+		this.swup.on('transitionEnd', this.onTransitionEnd);
 	}
 
 	unmount() {
 		this.swup.off('contentReplaced', this.announceVisit);
+		this.swup.off('transitionStart', this.onTransitionStart);
+		this.swup.off('transitionEnd', this.onTransitionEnd);
 	}
 
 	announceVisit = () => {
@@ -71,5 +75,13 @@ export default class SwupA11yPlugin extends Plugin {
 			content.setAttribute('tabindex', '-1');
 			content.focus({ preventScroll: true });
 		}
+	};
+
+	onTransitionStart = () => {
+		document.documentElement.setAttribute('aria-busy', 'true');
+	};
+
+	onTransitionEnd = () => {
+		document.documentElement.removeAttribute('aria-busy');
 	};
 }

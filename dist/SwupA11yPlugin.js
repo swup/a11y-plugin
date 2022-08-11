@@ -203,6 +203,14 @@ var SwupA11yPlugin = function (_Plugin) {
 			}
 		};
 
+		_this.onTransitionStart = function () {
+			document.documentElement.setAttribute('aria-busy', 'true');
+		};
+
+		_this.onTransitionEnd = function () {
+			document.documentElement.removeAttribute('aria-busy');
+		};
+
 		_this.options = _extends({
 			contentSelector: 'main',
 			headingSelector: 'h1, h2, [role=heading]',
@@ -218,11 +226,15 @@ var SwupA11yPlugin = function (_Plugin) {
 		key: 'mount',
 		value: function mount() {
 			this.swup.on('contentReplaced', this.announceVisit);
+			this.swup.on('transitionStart', this.onTransitionStart);
+			this.swup.on('transitionEnd', this.onTransitionEnd);
 		}
 	}, {
 		key: 'unmount',
 		value: function unmount() {
 			this.swup.off('contentReplaced', this.announceVisit);
+			this.swup.off('transitionStart', this.onTransitionStart);
+			this.swup.off('transitionEnd', this.onTransitionEnd);
 		}
 	}]);
 
