@@ -79,9 +79,9 @@ export default class SwupA11yPlugin extends Plugin {
 
 	onTransitionStart = () => {
 		document.documentElement.setAttribute('aria-busy', 'true');
-	}
+	};
 
 	onTransitionEnd = () => {
 		document.documentElement.removeAttribute('aria-busy');
-	}
+	};
 }
