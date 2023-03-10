@@ -15,3 +15,4 @@ wiki-wishlist
 .idea
 dist
 /plugins
+*.tgz
