@@ -1,7 +1,7 @@
 {
   "name": "@swup/a11y-plugin",
   "amdName": "SwupA11yPlugin",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Enhanced accessibility for swup-powered sites",
   "type": "module",
   "source": "src/index.js",
