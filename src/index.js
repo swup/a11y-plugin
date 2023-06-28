@@ -6,30 +6,31 @@ import 'focus-options-polyfill';
 export default class SwupA11yPlugin extends Plugin {
 	name = 'SwupA11yPlugin';
 
+	defaults = {
+		contentSelector: 'main',
+		headingSelector: 'h1, h2, [role=heading]',
+		announcementTemplate: 'Navigated to: {title}',
+		urlTemplate: 'New page at {url}'
+	};
+
 	constructor(options = {}) {
 		super();
 
-		this.options = {
-			contentSelector: 'main',
-			headingSelector: 'h1, h2, [role=heading]',
-			announcementTemplate: 'Navigated to: {title}',
-			urlTemplate: 'New page at {url}',
-			...options
-		};
+		this.options = { ...this.defaults, ...options };
 
 		this.liveRegion = new OnDemandLiveRegion();
 	}
 
 	mount() {
-		this.swup.on('contentReplaced', this.announceVisit);
-		this.swup.on('transitionStart', this.onTransitionStart);
-		this.swup.on('transitionEnd', this.onTransitionEnd);
+		this.swup.on('transitionStart', this.markAsBusy);
+		this.swup.on('replaceContent', this.announceVisit);
+		this.swup.on('transitionEnd', this.unmarkAsBusy);
 	}
 
 	unmount() {
-		this.swup.off('contentReplaced', this.announceVisit);
-		this.swup.off('transitionStart', this.onTransitionStart);
-		this.swup.off('transitionEnd', this.onTransitionEnd);
+		this.swup.off('transitionStart', this.markAsBusy);
+		this.swup.off('replaceContent', this.announceVisit);
+		this.swup.off('transitionEnd', this.unmarkAsBusy);
 	}
 
 	announceVisit = () => {
@@ -39,7 +40,7 @@ export default class SwupA11yPlugin extends Plugin {
 		});
 	};
 
-	announcePageName = () => {
+	announcePageName() {
 		const {
 			contentSelector,
 			headingSelector,
@@ -67,9 +68,9 @@ export default class SwupA11yPlugin extends Plugin {
 
 		const announcement = announcementTemplate.replace('{title}', pageName.trim());
 		this.liveRegion.say(announcement);
-	};
+	}
 
-	focusPageContent = () => {
+	focusPageContent() {
 		const content = document.querySelector(this.options.contentSelector);
 		if (content) {
 			content.setAttribute('tabindex', '-1');
@@ -77,11 +78,11 @@ export default class SwupA11yPlugin extends Plugin {
 		}
 	};
 
-	onTransitionStart = () => {
+	markAsBusy() {
 		document.documentElement.setAttribute('aria-busy', 'true');
-	};
+	}
 
-	onTransitionEnd = () => {
+	unmarkAsBusy() {
 		document.documentElement.removeAttribute('aria-busy');
-	};
+	}
 }
