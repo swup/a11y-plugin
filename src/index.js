@@ -6,6 +6,8 @@ import 'focus-options-polyfill';
 export default class SwupA11yPlugin extends Plugin {
 	name = 'SwupA11yPlugin';
 
+	requires = { swup: '>=4' };
+
 	defaults = {
 		contentSelector: 'main',
 		headingSelector: 'h1, h2, [role=heading]',
