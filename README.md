@@ -52,6 +52,12 @@ See the options below for customizing what elements to look for.
 </main>
 ```
 
+If you want the announcement to be different from the text content, use `aria-label`:
+
+```html
+<h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
+```
+
 ## Styling
 
 Browsers will display a visible outline around the main content area when it
@@ -87,8 +93,7 @@ This area will receive focus after a new page was loaded.
 
 The selector for finding headings **inside the main content area**.
 
-The first heading's content will be read to screen readers after a new page was
-loaded.
+The first heading's content will be read to screen readers after a new page was loaded.
 
 ### announcementTemplate
 
