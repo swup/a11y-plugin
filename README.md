@@ -1,37 +1,29 @@
 # Swup A11y Plugin
 
-**by [daun](https://github.com/daun)**
+A [swup](https://swup.js.org) plugin for enhanced accessibility.
 
-Enhance the accessibility of your [swup](https://github.com/swup/swup)-powered
-sites.
-
-Loading new content via AJAX is great UX for most users, but comes with serious
-shortcomings for screen reader users. We can improve the experience for
-everybody if we:
+Loading new content via AJAX is a great experience for most users, but comes with serious
+shortcomings for screen reader users. This plugin will improve that:
 
 - **Announce page visits** to screenreaders by reading the new page title
 - **Focus the main content area** after swapping out the content
 
-That's exactly what this plugin does.
-
 ## Installation
 
-This plugin can be installed with npm
+Install the plugin from npm and import it into your bundle.
 
 ```bash
 npm install @swup/a11y-plugin
 ```
 
-and included with import
-
-```shell
+```js
 import SwupA11yPlugin from '@swup/a11y-plugin';
 ```
 
-or included from the dist folder
+Or include the minified production file from a CDN:
 
 ```html
-<script src="./dist/SwupA11yPlugin.js"></script>
+<script src="https://unpkg.com/@swup/a11y-plugin@4"></script>
 ```
 
 ## Usage
