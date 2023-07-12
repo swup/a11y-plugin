@@ -24,15 +24,15 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
-		this.swup.hooks.on('transitionStart', this.markAsBusy);
-		this.swup.hooks.on('replaceContent', this.announceVisit);
-		this.swup.hooks.on('transitionEnd', this.unmarkAsBusy);
+		this.swup.hooks.on('visit:start', this.markAsBusy);
+		this.swup.hooks.on('content:replace', this.announceVisit);
+		this.swup.hooks.on('visit:end', this.unmarkAsBusy);
 	}
 
 	unmount() {
-		this.swup.hooks.off('transitionStart', this.markAsBusy);
-		this.swup.hooks.off('replaceContent', this.announceVisit);
-		this.swup.hooks.off('transitionEnd', this.unmarkAsBusy);
+		this.swup.hooks.off('visit:start', this.markAsBusy);
+		this.swup.hooks.off('content:replace', this.announceVisit);
+		this.swup.hooks.off('visit:end', this.unmarkAsBusy);
 	}
 
 	announceVisit = () => {
