@@ -24,31 +24,29 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
-		this.swup.hooks.on('visit:start', this.markAsBusy);
-		this.swup.hooks.on('content:replace', this.announceVisit);
-		this.swup.hooks.on('visit:end', this.unmarkAsBusy);
+		this.on('visit:start', this.markAsBusy);
+		this.on('visit:end', this.unmarkAsBusy);
+		this.on('content:replace', this.announceVisit);
 	}
 
-	unmount() {
-		this.swup.hooks.off('visit:start', this.markAsBusy);
-		this.swup.hooks.off('content:replace', this.announceVisit);
-		this.swup.hooks.off('visit:end', this.unmarkAsBusy);
+	markAsBusy() {
+		document.documentElement.setAttribute('aria-busy', 'true');
 	}
 
-	announceVisit = () => {
+	unmarkAsBusy() {
+		document.documentElement.removeAttribute('aria-busy');
+	}
+
+	announceVisit() {
 		requestAnimationFrame(() => {
 			this.announcePageName();
 			this.focusPageContent();
-		});
-	};
+		})
+	}
 
 	announcePageName() {
-		const {
-			contentSelector,
-			headingSelector,
-			urlTemplate,
-			announcementTemplate
-		} = this.options;
+		const { contentSelector, headingSelector, urlTemplate, announcementTemplate } =
+			this.options;
 
 		// Default: announce new /path/of/page.html
 		let pageName = urlTemplate.replace('{url}', window.location.pathname);
@@ -78,13 +76,5 @@ export default class SwupA11yPlugin extends Plugin {
 			content.setAttribute('tabindex', '-1');
 			content.focus({ preventScroll: true });
 		}
-	};
-
-	markAsBusy() {
-		document.documentElement.setAttribute('aria-busy', 'true');
-	}
-
-	unmarkAsBusy() {
-		document.documentElement.removeAttribute('aria-busy');
 	}
 }
