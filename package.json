@@ -42,7 +42,7 @@
     "url": "https://github.com/swup/a11y-plugin.git"
   },
   "dependencies": {
-    "@swup/plugin": "^2.0.0",
+    "@swup/plugin": "^3.0.0",
     "focus-options-polyfill": "^1.5.0",
     "on-demand-live-region": "^0.1.3"
   },
