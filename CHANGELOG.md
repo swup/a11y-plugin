@@ -2,7 +2,7 @@
 
 <!-- ## [Unreleased] -->
 
-## [4.0.0] - 2023-07
+## [4.0.0] - 2023-07-26
 
 - Update for swup 4 compatibility
 
