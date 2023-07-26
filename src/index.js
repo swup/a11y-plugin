@@ -6,46 +6,47 @@ import 'focus-options-polyfill';
 export default class SwupA11yPlugin extends Plugin {
 	name = 'SwupA11yPlugin';
 
+	requires = { swup: '>=4' };
+
+	defaults = {
+		contentSelector: 'main',
+		headingSelector: 'h1, h2, [role=heading]',
+		announcementTemplate: 'Navigated to: {title}',
+		urlTemplate: 'New page at {url}'
+	};
+
 	constructor(options = {}) {
 		super();
 
-		this.options = {
-			contentSelector: 'main',
-			headingSelector: 'h1, h2, [role=heading]',
-			announcementTemplate: 'Navigated to: {title}',
-			urlTemplate: 'New page at {url}',
-			...options
-		};
+		this.options = { ...this.defaults, ...options };
 
 		this.liveRegion = new OnDemandLiveRegion();
 	}
 
 	mount() {
-		this.swup.on('contentReplaced', this.announceVisit);
-		this.swup.on('transitionStart', this.onTransitionStart);
-		this.swup.on('transitionEnd', this.onTransitionEnd);
+		this.on('visit:start', this.markAsBusy);
+		this.on('visit:end', this.unmarkAsBusy);
+		this.on('content:replace', this.announceVisit);
 	}
 
-	unmount() {
-		this.swup.off('contentReplaced', this.announceVisit);
-		this.swup.off('transitionStart', this.onTransitionStart);
-		this.swup.off('transitionEnd', this.onTransitionEnd);
+	markAsBusy() {
+		document.documentElement.setAttribute('aria-busy', 'true');
 	}
 
-	announceVisit = () => {
+	unmarkAsBusy() {
+		document.documentElement.removeAttribute('aria-busy');
+	}
+
+	announceVisit() {
 		requestAnimationFrame(() => {
 			this.announcePageName();
 			this.focusPageContent();
-		});
-	};
+		})
+	}
 
-	announcePageName = () => {
-		const {
-			contentSelector,
-			headingSelector,
-			urlTemplate,
-			announcementTemplate
-		} = this.options;
+	announcePageName() {
+		const { contentSelector, headingSelector, urlTemplate, announcementTemplate } =
+			this.options;
 
 		// Default: announce new /path/of/page.html
 		let pageName = urlTemplate.replace('{url}', window.location.pathname);
@@ -67,21 +68,13 @@ export default class SwupA11yPlugin extends Plugin {
 
 		const announcement = announcementTemplate.replace('{title}', pageName.trim());
 		this.liveRegion.say(announcement);
-	};
+	}
 
-	focusPageContent = () => {
+	focusPageContent() {
 		const content = document.querySelector(this.options.contentSelector);
 		if (content) {
 			content.setAttribute('tabindex', '-1');
 			content.focus({ preventScroll: true });
 		}
-	};
-
-	onTransitionStart = () => {
-		document.documentElement.setAttribute('aria-busy', 'true');
-	};
-
-	onTransitionEnd = () => {
-		document.documentElement.removeAttribute('aria-busy');
-	};
+	}
 }
