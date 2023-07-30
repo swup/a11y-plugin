@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.1.0] - 2023-07-30
+
+- Port to TypeScript
+
 ## [4.0.0] - 2023-07-26
 
 - Update for swup 4 compatibility
@@ -23,8 +27,9 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.1.0...HEAD
 
+[4.1.0]: https://github.com/swup/a11y-plugin/releases/tag/4.1.0
 [4.0.0]: https://github.com/swup/a11y-plugin/releases/tag/4.0.0
 [3.0.0]: https://github.com/swup/a11y-plugin/releases/tag/3.0.0
 [2.1.0]: https://github.com/swup/a11y-plugin/releases/tag/2.1.0
