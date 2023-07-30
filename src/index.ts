@@ -3,23 +3,36 @@ import OnDemandLiveRegion from 'on-demand-live-region';
 
 import 'focus-options-polyfill';
 
+type Options = {
+	/** The selector for matching the main content area of the page. */
+	contentSelector: string;
+	/** The selector for finding headings inside the main content area. */
+	headingSelector: string;
+	/** How to announce the new page title. */
+	announcementTemplate: string;
+	/** How to announce the new page url. Used as fallback if no heading was found. */
+	urlTemplate: string;
+};
+
 export default class SwupA11yPlugin extends Plugin {
 	name = 'SwupA11yPlugin';
 
 	requires = { swup: '>=4' };
 
-	defaults = {
+	defaults: Options = {
 		contentSelector: 'main',
 		headingSelector: 'h1, h2, [role=heading]',
 		announcementTemplate: 'Navigated to: {title}',
 		urlTemplate: 'New page at {url}'
 	};
 
-	constructor(options = {}) {
+	options: Options;
+
+	liveRegion: OnDemandLiveRegion;
+
+	constructor(options: Partial<Options> = {}) {
 		super();
-
 		this.options = { ...this.defaults, ...options };
-
 		this.liveRegion = new OnDemandLiveRegion();
 	}
 
@@ -41,7 +54,7 @@ export default class SwupA11yPlugin extends Plugin {
 		requestAnimationFrame(() => {
 			this.announcePageName();
 			this.focusPageContent();
-		})
+		});
 	}
 
 	announcePageName() {
@@ -49,7 +62,7 @@ export default class SwupA11yPlugin extends Plugin {
 			this.options;
 
 		// Default: announce new /path/of/page.html
-		let pageName = urlTemplate.replace('{url}', window.location.pathname);
+		let pageName: string = urlTemplate.replace('{url}', window.location.pathname);
 
 		// Check for title tag
 		if (document.title) {
@@ -62,7 +75,7 @@ export default class SwupA11yPlugin extends Plugin {
 			const headings = content.querySelectorAll(headingSelector);
 			if (headings && headings.length) {
 				const [heading] = headings;
-				pageName = heading.getAttribute('aria-label') || heading.textContent;
+				pageName = heading.getAttribute('aria-label') || heading.textContent || pageName;
 			}
 		}
 
@@ -71,7 +84,7 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	focusPageContent() {
-		const content = document.querySelector(this.options.contentSelector);
+		const content = document.querySelector<HTMLElement>(this.options.contentSelector);
 		if (content) {
 			content.setAttribute('tabindex', '-1');
 			content.focus({ preventScroll: true });
