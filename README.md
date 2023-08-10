@@ -65,7 +65,7 @@ receives focus after navigation. Make sure to remove the outline in your CSS
 if that isn't the desired behavior.
 
 ```css
-main[tabindex="-1"] {
+main:focus {
   outline: none;
 }
 ```
