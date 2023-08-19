@@ -107,11 +107,15 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	disableTransitionAnimations(visit: Visit) {
-		visit.animation.animate  = false;
+		visit.animation.animate = this.shouldAnimate();
 	}
 
 	disableScrollAnimations(visit: Visit) {
 		// @ts-ignore: animate property is not defined unless Scroll Plugin installed
-		visit.scroll.animate  = false;
+		visit.scroll.animate = this.shouldAnimate();
+	}
+
+	shouldAnimate(): boolean {
+		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	}
 }
