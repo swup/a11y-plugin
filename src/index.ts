@@ -2,6 +2,7 @@ import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
 import 'focus-options-polyfill';
+import { Visit } from 'swup';
 
 type Options = {
 	/** The selector for matching the main content area of the page. */
@@ -12,6 +13,8 @@ type Options = {
 	announcementTemplate: string;
 	/** How to announce the new page url. Used as fallback if no heading was found. */
 	urlTemplate: string;
+	/** Whether to skip animations for users that prefer reduced motion. */
+	reduceMotion: boolean;
 };
 
 export default class SwupA11yPlugin extends Plugin {
@@ -23,7 +26,8 @@ export default class SwupA11yPlugin extends Plugin {
 		contentSelector: 'main',
 		headingSelector: 'h1, h2, [role=heading]',
 		announcementTemplate: 'Navigated to: {title}',
-		urlTemplate: 'New page at {url}'
+		urlTemplate: 'New page at {url}',
+		reduceMotion: false
 	};
 
 	options: Options;
@@ -37,9 +41,20 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
+		// Mark page as busy during transitions
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
+
+		// Announce new page after content is replaced
 		this.on('content:replace', this.announceVisit);
+
+		// Disable transition and scroll animations
+		if (this.options.reduceMotion) {
+			this.before('visit:start', this.disableTransitionAnimations);
+			this.before('visit:start', this.disableScrollAnimations);
+			this.before('link:self', this.disableScrollAnimations);
+			this.before('link:anchor', this.disableScrollAnimations);
+		}
 	}
 
 	markAsBusy() {
@@ -89,5 +104,14 @@ export default class SwupA11yPlugin extends Plugin {
 			content.setAttribute('tabindex', '-1');
 			content.focus({ preventScroll: true });
 		}
+	}
+
+	disableTransitionAnimations(visit: Visit) {
+		visit.animation.animate  = false;
+	}
+
+	disableScrollAnimations(visit: Visit) {
+		// @ts-ignore: animate property is not defined unless Scroll Plugin installed
+		visit.scroll.animate  = false;
 	}
 }
