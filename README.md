@@ -82,7 +82,8 @@ All options with their default values:
   contentSelector: 'main',
   headingSelector: 'h1, h2, [role=heading]',
   announcementTemplate: 'Navigated to: {title}',
-  urlTemplate: 'New page at {url}'
+  urlTemplate: 'New page at {url}',
+  respectReducedMotion: false
 }
 ```
 
@@ -107,3 +108,11 @@ How to announce the new page title.
 How to announce the new page url.
 
 Only used as fallback if neither a title tag nor a heading were found.
+
+### respectReducedMotion
+
+Whether to respects users' preference for reduced motion.
+
+Disable animated page transitions and animated scrolling if a user has enabled a
+setting on their device to minimize the amount of non-essential motion. Learn more about
+[prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
