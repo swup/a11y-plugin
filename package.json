@@ -1,7 +1,7 @@
 {
   "name": "@swup/a11y-plugin",
   "amdName": "SwupA11yPlugin",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "description": "A swup plugin for enhanced accessibility",
   "type": "module",
   "source": "src/index.ts",

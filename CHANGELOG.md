@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.2.0] - 2023-08-20
+
+- Allow disabling animations if users prefer reduced motion
+
 ## [4.1.0] - 2023-07-30
 
 - Port to TypeScript
@@ -27,8 +31,9 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.1.0...HEAD
+[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.2.0...HEAD
 
+[4.2.0]: https://github.com/swup/a11y-plugin/releases/tag/4.2.0
 [4.1.0]: https://github.com/swup/a11y-plugin/releases/tag/4.1.0
 [4.0.0]: https://github.com/swup/a11y-plugin/releases/tag/4.0.0
 [3.0.0]: https://github.com/swup/a11y-plugin/releases/tag/3.0.0
