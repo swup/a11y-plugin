@@ -83,7 +83,7 @@ All options with their default values:
   headingSelector: 'h1, h2, [role=heading]',
   announcementTemplate: 'Navigated to: {title}',
   urlTemplate: 'New page at {url}',
-  reduceMotion: false
+  respectReducedMotion: false
 }
 ```
 
@@ -109,7 +109,7 @@ How to announce the new page url.
 
 Only used as fallback if neither a title tag nor a heading were found.
 
-### reduceMotion
+### respectReducedMotion
 
 Whether to respects users' preference for reduced motion.
 

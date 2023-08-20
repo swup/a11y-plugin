@@ -14,7 +14,7 @@ type Options = {
 	/** How to announce the new page url. Used as fallback if no heading was found. */
 	urlTemplate: string;
 	/** Whether to skip animations for users that prefer reduced motion. */
-	reduceMotion: boolean;
+	respectReducedMotion: boolean;
 };
 
 export default class SwupA11yPlugin extends Plugin {
@@ -27,7 +27,7 @@ export default class SwupA11yPlugin extends Plugin {
 		headingSelector: 'h1, h2, [role=heading]',
 		announcementTemplate: 'Navigated to: {title}',
 		urlTemplate: 'New page at {url}',
-		reduceMotion: false
+		respectReducedMotion: false
 	};
 
 	options: Options;
@@ -48,8 +48,8 @@ export default class SwupA11yPlugin extends Plugin {
 		// Announce new page after content is replaced
 		this.on('content:replace', this.announceVisit);
 
-		// Disable transition and scroll animations
-		if (this.options.reduceMotion) {
+		// Disable transition and scroll animations if user prefers reduced motion
+		if (this.options.respectReducedMotion) {
 			this.before('visit:start', this.disableTransitionAnimations);
 			this.before('visit:start', this.disableScrollAnimations);
 			this.before('link:self', this.disableScrollAnimations);
