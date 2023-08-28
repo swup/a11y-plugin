@@ -1,8 +1,18 @@
+import { Visit } from 'swup';
 import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
 import 'focus-options-polyfill';
-import { Visit } from 'swup';
+
+declare module 'swup' {
+	export interface Visit {
+		/** The selector for finding focusable content. */
+		focus: string;
+	}
+	export interface HookDefinitions {
+		'content:focus': undefined;
+	}
+}
 
 type Options = {
 	/** The selector for matching the main content area of the page. */
@@ -41,12 +51,15 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
+		this.swup.hooks.create('content:focus');
+
 		// Mark page as busy during transitions
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
 
-		// Announce new page after content is replaced
-		this.on('content:replace', this.announceVisit);
+		// Announce new page and focus container after content is replaced
+		this.on('visit:start', this.prepareVisit);
+		this.on('content:replace', this.handleNewPageContent);
 
 		// Disable transition and scroll animations if user prefers reduced motion
 		if (this.options.respectReducedMotion) {
@@ -65,7 +78,11 @@ export default class SwupA11yPlugin extends Plugin {
 		document.documentElement.removeAttribute('aria-busy');
 	}
 
-	announceVisit() {
+	prepareVisit(visit: Visit) {
+		visit.focus = this.options.contentSelector;
+	}
+
+	handleNewPageContent() {
 		requestAnimationFrame(() => {
 			this.announcePageName();
 			this.focusPageContent();
@@ -99,11 +116,14 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	focusPageContent() {
-		const content = document.querySelector<HTMLElement>(this.options.contentSelector);
-		if (content) {
-			content.setAttribute('tabindex', '-1');
-			content.focus({ preventScroll: true });
-		}
+		this.swup.hooks.callSync('content:focus', undefined, (visit) => {
+			if (!visit.focus) return;
+			const content = document.querySelector<HTMLElement>(visit.focus);
+			if (content) {
+				content.setAttribute('tabindex', '-1');
+				content.focus({ preventScroll: true });
+			}
+		});
 	}
 
 	disableTransitionAnimations(visit: Visit) {
