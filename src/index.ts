@@ -1,4 +1,4 @@
-import { Visit } from 'swup';
+import { Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
@@ -82,11 +82,10 @@ export default class SwupA11yPlugin extends Plugin {
 		visit.focus = this.options.contentSelector;
 	}
 
-	handleNewPageContent() {
-		requestAnimationFrame(() => {
-			this.announcePageName();
-			this.focusPageContent();
-		});
+	async handleNewPageContent() {
+		await nextTick();
+		this.announcePageName();
+		await this.focusPageContent();
 	}
 
 	announcePageName() {
@@ -115,8 +114,8 @@ export default class SwupA11yPlugin extends Plugin {
 		this.liveRegion.say(announcement);
 	}
 
-	focusPageContent() {
-		this.swup.hooks.callSync('content:focus', undefined, (visit) => {
+	async focusPageContent() {
+		await this.swup.hooks.call('content:focus', undefined, (visit) => {
 			if (!visit.focus) return;
 			const content = document.querySelector<HTMLElement>(visit.focus);
 			if (content) {
