@@ -58,12 +58,14 @@ export default class SwupA11yPlugin extends Plugin {
 	mount() {
 		this.swup.hooks.create('content:focus');
 
+		// Prepare visit by adding a11y settings to visit object
+		this.before('visit:start', this.prepareVisit);
+
 		// Mark page as busy during transitions
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
 
 		// Announce new page and focus container after content is replaced
-		this.before('visit:start', this.prepareVisit);
 		this.on('content:replace', this.handleNewPageContent);
 
 		// Disable transition and scroll animations if user prefers reduced motion
