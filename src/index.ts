@@ -5,8 +5,8 @@ import OnDemandLiveRegion from 'on-demand-live-region';
 import 'focus-options-polyfill';
 
 export interface VisitA11y {
-	/** The selector for finding focusable content */
-	focus: string | false;
+	/** The element to focus after content is replaced */
+	focus: string | HTMLElement | false;
 }
 
 declare module 'swup' {
@@ -123,11 +123,16 @@ export default class SwupA11yPlugin extends Plugin {
 
 	async focusPageContent() {
 		await this.swup.hooks.call('content:focus', undefined, (visit) => {
-			if (!visit.a11y.focus) return;
-			const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-			if (!content) return;
-			content.setAttribute('tabindex', '-1');
-			content.focus({ preventScroll: true });
+			let content: string | HTMLElement | false | null = visit.a11y.focus;
+			if (typeof content === 'string') {
+				content = document.querySelector<HTMLElement>(content);
+			}
+			if (content instanceof HTMLElement) {
+				if (this.needsTabindex(content)) {
+					content.setAttribute('tabindex', '-1');
+				}
+				content.focus({ preventScroll: true });
+			}
 		});
 	}
 
@@ -142,5 +147,9 @@ export default class SwupA11yPlugin extends Plugin {
 
 	shouldAnimate(): boolean {
 		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	}
+
+	needsTabindex(el: HTMLElement): boolean {
+		return !el.matches('a, button, input, textarea, select, details, [tabindex]');
 	}
 }
