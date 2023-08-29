@@ -116,3 +116,11 @@ Whether to respects users' preference for reduced motion.
 Disable animated page transitions and animated scrolling if a user has enabled a
 setting on their device to minimize the amount of non-essential motion. Learn more about
 [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
+
+## Hooks
+
+The plugin adds a new hook: `content:focus`.
+
+```js
+swup.hooks.on('content:focus', () => console.log('Swup has focussed new content'));
+```
