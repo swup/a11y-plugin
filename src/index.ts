@@ -91,10 +91,11 @@ export default class SwupA11yPlugin extends Plugin {
 		};
 	}
 
-	async handleNewPageContent() {
-		await nextTick();
-		this.announcePageName();
-		await this.focusPageContent();
+	handleNewPageContent() {
+		nextTick().then(() => {
+			this.announcePageName();
+			this.focusPageContent();
+		});
 	}
 
 	announcePageName() {
