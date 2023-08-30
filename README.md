@@ -116,3 +116,33 @@ Whether to respects users' preference for reduced motion.
 Disable animated page transitions and animated scrolling if a user has enabled a
 setting on their device to minimize the amount of non-essential motion. Learn more about
 [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
+
+## Visit object
+
+The plugin extends the visit object with a new `a11y` key that can be used to customize the
+behavior on the fly.
+
+```js
+{
+  from: {},
+  to: {},
+  a11y: {
+    focus: 'main'
+  }
+}
+```
+
+### visit.a11y.focus
+
+The element to receive focus after the new page was loaded. This is taken directly from the
+`contentSelector` option passed into the plugin, but can be customized per visit. Set it to a
+selector `string` to select an element, or set it to `false` to not move the focus on this visit.
+
+## Hooks
+
+The plugin adds a new hook: `content:focus`. It is run after `content:replace`, when the new
+content is already in the DOM.
+
+```js
+swup.hooks.on('content:focus', () => console.log('Swup has focussed new content'));
+```

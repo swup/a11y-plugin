@@ -1,8 +1,23 @@
+import { Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
 import 'focus-options-polyfill';
-import { Visit } from 'swup';
+
+export interface VisitA11y {
+	/** The element to focus after the content is replaced */
+	focus: string | false;
+}
+
+declare module 'swup' {
+	export interface Visit {
+		/** Accessibility settings for this visit */
+		a11y: VisitA11y;
+	}
+	export interface HookDefinitions {
+		'content:focus': undefined;
+	}
+}
 
 type Options = {
 	/** The selector for matching the main content area of the page. */
@@ -41,12 +56,17 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
+		this.swup.hooks.create('content:focus');
+
+		// Prepare visit by adding a11y settings to visit object
+		this.before('visit:start', this.prepareVisit);
+
 		// Mark page as busy during transitions
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
 
-		// Announce new page after content is replaced
-		this.on('content:replace', this.announceVisit);
+		// Announce new page and focus container after content is replaced
+		this.on('content:replace', this.handleNewPageContent);
 
 		// Disable transition and scroll animations if user prefers reduced motion
 		if (this.options.respectReducedMotion) {
@@ -65,8 +85,14 @@ export default class SwupA11yPlugin extends Plugin {
 		document.documentElement.removeAttribute('aria-busy');
 	}
 
-	announceVisit() {
-		requestAnimationFrame(() => {
+	prepareVisit(visit: Visit) {
+		visit.a11y = {
+			focus: this.options.contentSelector
+		};
+	}
+
+	handleNewPageContent() {
+		nextTick().then(() => {
 			this.announcePageName();
 			this.focusPageContent();
 		});
@@ -98,12 +124,18 @@ export default class SwupA11yPlugin extends Plugin {
 		this.liveRegion.say(announcement);
 	}
 
-	focusPageContent() {
-		const content = document.querySelector<HTMLElement>(this.options.contentSelector);
-		if (content) {
-			content.setAttribute('tabindex', '-1');
-			content.focus({ preventScroll: true });
-		}
+	async focusPageContent() {
+		await this.swup.hooks.call('content:focus', undefined, (visit) => {
+			if (!visit.a11y.focus) return;
+
+			const content = document.querySelector<HTMLElement>(visit.a11y.focus);
+			if (content instanceof HTMLElement) {
+				if (this.needsTabindex(content)) {
+					content.setAttribute('tabindex', '-1');
+				}
+				content.focus({ preventScroll: true });
+			}
+		});
 	}
 
 	disableTransitionAnimations(visit: Visit) {
@@ -117,5 +149,9 @@ export default class SwupA11yPlugin extends Plugin {
 
 	shouldAnimate(): boolean {
 		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	}
+
+	needsTabindex(el: HTMLElement): boolean {
+		return !el.matches('a, button, input, textarea, select, details, [tabindex]');
 	}
 }
