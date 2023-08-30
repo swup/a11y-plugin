@@ -125,7 +125,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	async focusPageContent() {
 		await this.swup.hooks.call('content:focus', undefined, (visit) => {
-			let content: string | HTMLElement | false | null = visit.a11y.focus;
+			let content: VisitA11y['focus'] | null = visit.a11y.focus;
 			if (typeof content === 'string') {
 				content = document.querySelector<HTMLElement>(content);
 			}
