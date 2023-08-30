@@ -140,9 +140,21 @@ selector `string` to select an element, or set it to `false` to not move the foc
 
 ## Hooks
 
-The plugin adds a new hook: `content:focus`. It is run after `content:replace`, when the new
-content is already in the DOM.
+The plugin adds two new hooks: `content:announce` and `content:focus`. Both run directly
+after the internal `content:replace` handler, when the new content is already in the DOM.
+
+### content:announce
+
+Executes the announcement of the new page title.
 
 ```js
-swup.hooks.on('content:focus', () => console.log('Swup has focussed new content'));
+swup.hooks.on('content:announce', () => console.log('New content was announced'));
+```
+
+### content:focus
+
+Executes the focussing of the new main content container.
+
+```js
+swup.hooks.on('content:focus', () => console.log('New content received focus'));
 ```
