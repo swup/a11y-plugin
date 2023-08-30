@@ -5,6 +5,8 @@ import OnDemandLiveRegion from 'on-demand-live-region';
 import 'focus-options-polyfill';
 
 export interface VisitA11y {
+	/** How to announce the new content after it inserted */
+	announce: string | false;
 	/** The element to focus after the content is replaced */
 	focus: string | false;
 }
@@ -15,6 +17,7 @@ declare module 'swup' {
 		a11y: VisitA11y;
 	}
 	export interface HookDefinitions {
+		'content:announce': undefined;
 		'content:focus': undefined;
 	}
 }
@@ -56,6 +59,8 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	mount() {
+		// Prepare new hooks
+		this.swup.hooks.create('content:announce');
 		this.swup.hooks.create('content:focus');
 
 		// Prepare visit by adding a11y settings to visit object
@@ -87,18 +92,25 @@ export default class SwupA11yPlugin extends Plugin {
 
 	prepareVisit(visit: Visit) {
 		visit.a11y = {
+			announce: this.options.announcementTemplate,
 			focus: this.options.contentSelector
 		};
 	}
 
 	handleNewPageContent() {
-		nextTick().then(() => {
-			this.announcePageName();
-			this.focusPageContent();
+		// We can't `await` nextTick() here because it would block ViewTransition callbacks
+		// Apparently, during ViewTransition updates there is no microtask queue
+		nextTick().then(async () => {
+			this.swup.hooks.call('content:announce', undefined, (visit) => {
+				this.announcePageName(visit);
+			});
+			this.swup.hooks.call('content:focus', undefined, (visit) => {
+				this.focusPageContent(visit);
+			});
 		});
 	}
 
-	announcePageName() {
+	announcePageName(visit: Visit) {
 		const { contentSelector, headingSelector, urlTemplate, announcementTemplate } =
 			this.options;
 
@@ -124,18 +136,16 @@ export default class SwupA11yPlugin extends Plugin {
 		this.liveRegion.say(announcement);
 	}
 
-	async focusPageContent() {
-		await this.swup.hooks.call('content:focus', undefined, (visit) => {
-			if (!visit.a11y.focus) return;
+	async focusPageContent(visit: Visit) {
+		if (!visit.a11y.focus) return;
 
-			const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-			if (content instanceof HTMLElement) {
-				if (this.needsTabindex(content)) {
-					content.setAttribute('tabindex', '-1');
-				}
-				content.focus({ preventScroll: true });
+		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
+		if (content instanceof HTMLElement) {
+			if (this.needsTabindex(content)) {
+				content.setAttribute('tabindex', '-1');
 			}
-		});
+			content.focus({ preventScroll: true });
+		}
 	}
 
 	disableTransitionAnimations(visit: Visit) {
