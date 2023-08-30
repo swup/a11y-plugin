@@ -2,6 +2,11 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.0] - 2023-08-30
+
+- Allow overriding or disabling focus selector per visit
+- Fix issue where reduced motion feature would animate history visits
+
 ## [4.2.0] - 2023-08-20
 
 - Allow disabling animations if users prefer reduced motion
@@ -31,8 +36,9 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.2.0...HEAD
+[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.3.0...HEAD
 
+[4.3.0]: https://github.com/swup/a11y-plugin/releases/tag/4.3.0
 [4.2.0]: https://github.com/swup/a11y-plugin/releases/tag/4.2.0
 [4.1.0]: https://github.com/swup/a11y-plugin/releases/tag/4.1.0
 [4.0.0]: https://github.com/swup/a11y-plugin/releases/tag/4.0.0
