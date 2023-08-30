@@ -5,8 +5,8 @@ import OnDemandLiveRegion from 'on-demand-live-region';
 import 'focus-options-polyfill';
 
 export interface VisitA11y {
-	/** The element to focus after content is replaced */
-	focus: string | HTMLElement | false;
+	/** The element to focus after the content is replaced */
+	focus: string | false;
 }
 
 declare module 'swup' {
@@ -126,10 +126,9 @@ export default class SwupA11yPlugin extends Plugin {
 
 	async focusPageContent() {
 		await this.swup.hooks.call('content:focus', undefined, (visit) => {
-			let content: VisitA11y['focus'] | null = visit.a11y.focus;
-			if (typeof content === 'string') {
-				content = document.querySelector<HTMLElement>(content);
-			}
+			if (!visit.a11y.focus) return;
+
+			const content = document.querySelector<HTMLElement>(visit.a11y.focus);
 			if (content instanceof HTMLElement) {
 				if (this.needsTabindex(content)) {
 					content.setAttribute('tabindex', '-1');

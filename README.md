@@ -136,13 +136,7 @@ behavior on the fly.
 
 The element to receive focus after the new page was loaded. This is taken directly from the
 `contentSelector` option passed into the plugin, but can be customized per visit. Set it to a
-selector `string` or an actual `HTMLElement` instance to select an element, or set it to `false` to
-keep the focus where it was before navigating.
-
-> **Note**: When setting the `focus` key to an actual DOM element instance, make sure to grab it
-> after the content was replaced, as otherwise it might be referring to an element of the previous
-> page already removed from the DOM. Hooking into `visit:start` is too early — the best option is
-> hooking right before `content:focus`.
+selector `string` to select an element, or set it to `false` to not move the focus on this visit.
 
 ## Hooks
 
