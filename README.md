@@ -159,10 +159,10 @@ it yourself in the `content:replace` hook.
 
 #### Deprecated options
 
-The following two announcement templates variables are now grouped in a single `announcements` object.
+The following two options are now grouped in the `announcements` object and deprecated.
 
-- `announcementTemplate`: How to announce the new page.
-- `urlTemplate`: How to announce the new page if neither a title tag nor a heading were found.
+- `announcementTemplate`: equivalent to `announcements.title`
+- `urlTemplate`: equivalent to `announcements.url`
 
 ## Visit object
 
