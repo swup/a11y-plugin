@@ -81,9 +81,11 @@ All options with their default values:
 {
   contentSelector: 'main',
   headingSelector: 'h1, h2, [role=heading]',
-  announcementTemplate: 'Navigated to: {title}',
-  urlTemplate: 'New page at {url}',
-  respectReducedMotion: false
+  respectReducedMotion: false,
+  announcements: {
+    title: 'Navigated to: {title}',
+    url: 'New page at {url}'
+  }
 }
 ```
 
@@ -99,16 +101,6 @@ The selector for finding headings **inside the main content area**.
 
 The first heading's content will be read to screen readers after a new page was loaded.
 
-### announcementTemplate
-
-How to announce the new page title.
-
-### urlTemplate
-
-How to announce the new page url.
-
-Only used as fallback if neither a title tag nor a heading were found.
-
 ### respectReducedMotion
 
 Whether to respects users' preference for reduced motion.
@@ -117,6 +109,65 @@ Disable animated page transitions and animated scrolling if a user has enabled a
 setting on their device to minimize the amount of non-essential motion. Learn more about
 [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
 
+### announcements
+
+How to announce the new page. If found, the title tag or main heading is announced. In case neither
+is found, the new url will be announced as title instead.
+
+```js
+{
+  announcements: {
+    title: 'Navigated to: {title}',
+    url: 'New page at {url}'
+  }
+}
+```
+
+#### Translations
+
+For multi-language sites, pass in a nested object keyed by locale. The locale must match the
+`html` element's [lang](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang) attribute
+exactly. Use an asterisk `*` to declare fallback translations.
+
+> **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
+[Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
+it yourself in the `content:replace` hook.
+
+```js
+{
+  announcements: {
+    'en-US': {
+      title: 'Navigated to: {title}',
+      url: 'New page at {url}'
+    },
+    'de-DE': {
+      title: 'Navigiert zu: {title}',
+      url: 'Neue Seite unter {url}'
+    },
+    'fr-FR': {
+      title: 'Navigué vers : {title}',
+      url: 'Nouvelle page à {url}'
+    },
+    '*': {
+      title: '{title}',
+      url: '{url}'
+    }
+  }
+}
+```
+
+### Deprecated options
+
+The following two announcement templates are now grouped in a single `announcements` object.
+
+#### announcementTemplate
+
+How to announce the new page.
+
+#### urlTemplate
+
+How to announce the new page if neither a title tag nor a heading were found.
+
 ## Visit object
 
 The plugin extends the visit object with a new `a11y` key that can be used to customize the
@@ -124,13 +175,22 @@ behavior on the fly.
 
 ```js
 {
-  from: {},
-  to: {},
+  from: { ... },
+  to: { ... },
   a11y: {
+    announcement: 'Navigated to: About',
     focus: 'main'
   }
 }
 ```
+
+### visit.a11y.announcement
+
+The text to announce after the new page was loaded. This is the final text after choosing the
+correct language from the [announcements](#announcements) option and filling in any placeholders.
+Note that this can only be populated once the new page was fetched and its contents are available,
+so the **only** practical place to inspect or overwrite this would be right before the
+`content:announce` hook.
 
 ### visit.a11y.focus
 
