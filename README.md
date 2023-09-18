@@ -174,21 +174,20 @@ behavior on the fly.
   from: { ... },
   to: { ... },
   a11y: {
-    announcement: 'Navigated to: About',
+    announce: 'Navigated to: About',
     focus: 'main'
   }
 }
 ```
 
-### visit.a11y.announcement
+### visit.a11y.announce
 
 The text to announce after the new page was loaded. This is the final text after choosing the
 correct language from the [announcements](#announcements) option and filling in any placeholders.
-Modify to read a custom announcement.
+Modify it to read a custom announcement.
 
 Since the text can only be populated once the new page was fetched and its contents are available,
-so the only practical place to inspect or overwrite this would be right before the
-`content:announce` hook:
+the only place to inspect or modify this would be right before the `content:announce` hook.
 
 ```js
 swup.hooks.before('content:announce', (visit) => {
