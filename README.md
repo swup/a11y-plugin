@@ -156,17 +156,12 @@ it yourself in the `content:replace` hook.
 }
 ```
 
-### Deprecated options
+#### Deprecated options
 
-The following two announcement templates are now grouped in a single `announcements` object.
+The following two announcement templates variables are now grouped in a single `announcements` object.
 
-#### announcementTemplate
-
-How to announce the new page.
-
-#### urlTemplate
-
-How to announce the new page if neither a title tag nor a heading were found.
+- `announcementTemplate`: How to announce the new page.
+- `urlTemplate`: How to announce the new page if neither a title tag nor a heading were found.
 
 ## Visit object
 
