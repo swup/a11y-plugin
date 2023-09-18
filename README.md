@@ -183,9 +183,17 @@ behavior on the fly.
 
 The text to announce after the new page was loaded. This is the final text after choosing the
 correct language from the [announcements](#announcements) option and filling in any placeholders.
-Note that this can only be populated once the new page was fetched and its contents are available,
-so the **only** practical place to inspect or overwrite this would be right before the
-`content:announce` hook.
+Modify to read a custom announcement.
+
+Since the text can only be populated once the new page was fetched and its contents are available,
+so the only practical place to inspect or overwrite this would be right before the
+`content:announce` hook:
+
+```js
+swup.hooks.before('content:announce', (visit) => {
+  visit.a11y.announce = 'New page loaded';
+});
+```
 
 ### visit.a11y.focus
 
