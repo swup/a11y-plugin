@@ -6,7 +6,7 @@ import 'focus-options-polyfill';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
-	announce: string | false;
+	announce: string | false | undefined;
 	/** The element to focus after the content is replaced */
 	focus: string | false;
 }
@@ -22,17 +22,35 @@ declare module 'swup' {
 	}
 }
 
+/** Templates for announcements of the new page content. */
+type Announcements = {
+	/** How to announce the new page title. */
+	title: string;
+	/** How to announce the new page url. Used as fallback if no heading was found. */
+	url: string;
+};
+
+/** Translations of announcements, keyed by language. */
+type AnnouncementTranslations = {
+	[lang: string]: Announcements;
+} & {
+	[key in keyof Announcements]: string;
+};
+
 type Options = {
 	/** The selector for matching the main content area of the page. */
 	contentSelector: string;
 	/** The selector for finding headings inside the main content area. */
 	headingSelector: string;
-	/** How to announce the new page title. */
-	announcementTemplate: string;
-	/** How to announce the new page url. Used as fallback if no heading was found. */
-	urlTemplate: string;
 	/** Whether to skip animations for users that prefer reduced motion. */
 	respectReducedMotion: boolean;
+	/** How to announce the new page title and url. */
+	announcements: Announcements | AnnouncementTranslations;
+
+	/** How to announce the new page title. @deprecated Use the `announcements` option.  */
+	announcementTemplate?: string;
+	/** How to announce the new page url. @deprecated Use the `announcements` option. */
+	urlTemplate?: string;
 };
 
 export default class SwupA11yPlugin extends Plugin {
@@ -43,9 +61,11 @@ export default class SwupA11yPlugin extends Plugin {
 	defaults: Options = {
 		contentSelector: 'main',
 		headingSelector: 'h1, h2, [role=heading]',
-		announcementTemplate: 'Navigated to: {title}',
-		urlTemplate: 'New page at {url}',
-		respectReducedMotion: false
+		respectReducedMotion: false,
+		announcements: {
+			title: 'Navigated to: {title}',
+			url: 'New page at {url}'
+		}
 	};
 
 	options: Options;
@@ -54,7 +74,19 @@ export default class SwupA11yPlugin extends Plugin {
 
 	constructor(options: Partial<Options> = {}) {
 		super();
+
+		// Merge deprecated announcement templates into new structure
+		options.announcements = {
+			...this.defaults.announcements,
+			title: options.announcementTemplate ?? this.defaults.announcements.title,
+			url: options.urlTemplate ?? this.defaults.announcements.url,
+			...options.announcements,
+		};
+
+		// Merge default options with user defined options
 		this.options = { ...this.defaults, ...options };
+
+		// Create live region for announcing new page content
 		this.liveRegion = new OnDemandLiveRegion();
 	}
 
@@ -69,6 +101,9 @@ export default class SwupA11yPlugin extends Plugin {
 		// Mark page as busy during transitions
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
+
+		// Prepare announcement by reading new page heading
+		this.on('content:replace', this.prepareAnnouncement);
 
 		// Announce new page and focus container after content is replaced
 		this.on('content:replace', this.handleNewPageContent);
@@ -92,9 +127,39 @@ export default class SwupA11yPlugin extends Plugin {
 
 	prepareVisit(visit: Visit) {
 		visit.a11y = {
-			announce: this.options.announcementTemplate,
+			announce: undefined,
 			focus: this.options.contentSelector
 		};
+	}
+
+	prepareAnnouncement(visit: Visit) {
+		// Allow customizing announcement before this hook
+		if (typeof visit.a11y.announce !== 'undefined') return;
+
+		const { contentSelector, headingSelector, announcements } = this.options;
+
+		const url =  window.location.pathname;
+		const lang = document.documentElement.lang || '*';
+		// @ts-expect-error: indexing is messy
+		const templates: Announcements = announcements[lang] || announcements['*'] || announcements;
+		if (typeof templates !== 'object') return;
+
+		// Look for first heading in content container
+		const heading = document.querySelector(`${contentSelector} ${headingSelector}`);
+		// Get page title from aria attribute or text content
+		let title = heading?.getAttribute('aria-label') || heading?.textContent || document.title;
+		// Fall back to url if no title was found
+		title = title || this.parseTemplate(templates.url, { url });
+		// Replace {title} and {url} variables in template
+		const announcement = this.parseTemplate(templates.title, { title, url });
+
+		visit.a11y.announce = announcement;
+	}
+
+	parseTemplate(str: string, replacements: Record<string, string>): string {
+		return Object.keys(replacements).reduce((str, key) => {
+			return str.replace(`{${key}}`, replacements[key] || '');
+		}, str);
 	}
 
 	handleNewPageContent() {
@@ -111,29 +176,9 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	announcePageName(visit: Visit) {
-		const { contentSelector, headingSelector, urlTemplate, announcementTemplate } =
-			this.options;
-
-		// Default: announce new /path/of/page.html
-		let pageName: string = urlTemplate.replace('{url}', window.location.pathname);
-
-		// Check for title tag
-		if (document.title) {
-			pageName = document.title;
+		if (visit.a11y.announce) {
+			this.liveRegion.say(visit.a11y.announce);
 		}
-
-		// Look for first heading in content container
-		const content = document.querySelector(contentSelector);
-		if (content) {
-			const headings = content.querySelectorAll(headingSelector);
-			if (headings && headings.length) {
-				const [heading] = headings;
-				pageName = heading.getAttribute('aria-label') || heading.textContent || pageName;
-			}
-		}
-
-		const announcement = announcementTemplate.replace('{title}', pageName.trim());
-		this.liveRegion.say(announcement);
 	}
 
 	async focusPageContent(visit: Visit) {
