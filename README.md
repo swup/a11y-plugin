@@ -7,6 +7,7 @@ shortcomings for screen reader users. This plugin will improve that:
 
 - **Announce page visits** to screenreaders by reading the new page title
 - **Focus the main content area** after swapping out the content
+- **Skip animations** for users with a preference for reduced motion
 
 ## Installation
 
