@@ -159,7 +159,7 @@ export default class SwupA11yPlugin extends Plugin {
 	parseTemplate(str: string, replacements: Record<string, string>): string {
 		return Object.keys(replacements).reduce((str, key) => {
 			return str.replace(`{${key}}`, replacements[key] || '');
-		}, str);
+		}, str || '');
 	}
 
 	handleNewPageContent() {
