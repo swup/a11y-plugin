@@ -53,7 +53,17 @@ See the options below for customizing what elements to look for.
 </main>
 ```
 
-If you want the announcement to be different from the text content, use `aria-label`:
+## Announcements
+
+The plugin will announce the new page to screen readers after navigating to it. It will look for the
+following and announce the first one found:
+
+- Main heading label: `<h1 aria-label="About"></h1>`
+- Main heading content: `<h1>About</h1>`
+- Document title: `<title>About</title>`
+- Page URL: `/about/`
+
+The easiest way to announce a page title differing from the main heading is using `aria-label`:
 
 ```html
 <h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
@@ -112,8 +122,10 @@ setting on their device to minimize the amount of non-essential motion. Learn mo
 
 ### announcements
 
-How to announce the new page. If found, the title tag or main heading is announced. In case neither
-is found, the new url will be announced as title instead.
+How the new page is announced. Use the variables `{title}`, `{href}`, `{path}` and `{url}` to
+customize this. A visit is announced differently, depending on whether the new page has a title or
+not. If found, the main heading or document title is announced. If neither
+is found, the new url will be announced instead:
 
 ```js
 {
