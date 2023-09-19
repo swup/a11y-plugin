@@ -122,10 +122,9 @@ setting on their device to minimize the amount of non-essential motion. Learn mo
 
 ### announcements
 
-How the new page is announced. Use the variables `{title}`, `{href}`, `{path}` and `{url}` to
-customize this. A visit is announced differently, depending on whether the new page has a title or
-not. If found, the main heading or document title is announced. If neither
-is found, the new url will be announced instead:
+How the new page is announced. A visit is announced differently depending on whether the new page
+has a title or not. If found, the main heading or document title is announced. If neither is found,
+the new url will be announced instead:
 
 - **Title found?** Read `announcements.visit`, replacing `{title}` with the new title
 - **No title?** Read `announcements.visit` too, but replacing `{title}` with the content of `announcements.url`
