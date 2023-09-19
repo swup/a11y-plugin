@@ -24,9 +24,9 @@ declare module 'swup' {
 
 /** Templates for announcements of the new page content. */
 type Announcements = {
-	/** How to announce the new page title. */
-	title: string;
-	/** How to announce the new page url. Used as fallback if no heading was found. */
+	/** How to announce the new page. */
+	visit: string;
+	/** How to read a page url. Used as fallback if no heading was found. */
 	url: string;
 };
 
@@ -47,9 +47,9 @@ type Options = {
 	/** How to announce the new page title and url. */
 	announcements: Announcements | AnnouncementTranslations;
 
-	/** How to announce the new page title. @deprecated Use the `announcements` option.  */
+	/** How to announce the new page. @deprecated Use the `announcements` option.  */
 	announcementTemplate?: string;
-	/** How to announce the new page url. @deprecated Use the `announcements` option. */
+	/** How to announce a url. @deprecated Use the `announcements` option. */
 	urlTemplate?: string;
 };
 
@@ -63,7 +63,7 @@ export default class SwupA11yPlugin extends Plugin {
 		headingSelector: 'h1, h2, [role=heading]',
 		respectReducedMotion: false,
 		announcements: {
-			title: 'Navigated to: {title}',
+			visit: 'Navigated to: {title}',
 			url: 'New page at {url}'
 		}
 	};
@@ -78,7 +78,7 @@ export default class SwupA11yPlugin extends Plugin {
 		// Merge deprecated announcement templates into new structure
 		options.announcements = {
 			...this.defaults.announcements,
-			title: options.announcementTemplate ?? this.defaults.announcements.title,
+			visit: options.announcementTemplate ?? this.defaults.announcements.visit,
 			url: options.urlTemplate ?? this.defaults.announcements.url,
 			...options.announcements,
 		};
@@ -151,7 +151,7 @@ export default class SwupA11yPlugin extends Plugin {
 		// Fall back to url if no title was found
 		title = title || this.parseTemplate(templates.url, { url });
 		// Replace {title} and {url} variables in template
-		const announcement = this.parseTemplate(templates.title, { title, url });
+		const announcement = this.parseTemplate(templates.visit, { title, href, url, path });
 
 		visit.a11y.announce = announcement;
 	}

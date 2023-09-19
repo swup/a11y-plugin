@@ -94,7 +94,7 @@ All options with their default values:
   headingSelector: 'h1, h2, [role=heading]',
   respectReducedMotion: false,
   announcements: {
-    title: 'Navigated to: {title}',
+    visit: 'Navigated to: {title}',
     url: 'New page at {url}'
   }
 }
@@ -127,10 +127,13 @@ customize this. A visit is announced differently, depending on whether the new p
 not. If found, the main heading or document title is announced. If neither
 is found, the new url will be announced instead:
 
+- **Title found?** Read `announcements.visit`, replacing `{title}` with the new title
+- **No title?** Read `announcements.visit` too, but replacing `{title}` with the content of `announcements.url`
+
 ```js
 {
   announcements: {
-    title: 'Navigated to: {title}',
+    visit: 'Navigated to: {title}',
     url: 'New page at {url}'
   }
 }
@@ -150,19 +153,19 @@ it yourself in the `content:replace` hook.
 {
   announcements: {
     'en-US': {
-      title: 'Navigated to: {title}',
+      visit: 'Navigated to: {title}',
       url: 'New page at {url}'
     },
     'de-DE': {
-      title: 'Navigiert zu: {title}',
+      visit: 'Navigiert zu: {title}',
       url: 'Neue Seite unter {url}'
     },
     'fr-FR': {
-      title: 'Navigué vers : {title}',
+      visit: 'Navigué vers : {title}',
       url: 'Nouvelle page à {url}'
     },
     '*': {
-      title: '{title}',
+      visit: '{title}',
       url: '{url}'
     }
   }
@@ -173,7 +176,7 @@ it yourself in the `content:replace` hook.
 
 The following two options are now grouped in the `announcements` object and deprecated.
 
-- `announcementTemplate`: equivalent to `announcements.title`
+- `announcementTemplate`: equivalent to `announcements.visit`
 - `urlTemplate`: equivalent to `announcements.url`
 
 ## Visit object
