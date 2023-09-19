@@ -7,6 +7,7 @@ shortcomings for screen reader users. This plugin will improve that:
 
 - **Announce page visits** to screenreaders by reading the new page title
 - **Focus the main content area** after swapping out the content
+- **Skip animations** for users with a preference for reduced motion
 
 ## Installation
 
@@ -52,7 +53,17 @@ See the options below for customizing what elements to look for.
 </main>
 ```
 
-If you want the announcement to be different from the text content, use `aria-label`:
+## Announcements
+
+The plugin will announce the new page to screen readers after navigating to it. It will look for the
+following and announce the first one found:
+
+- Main heading label: `<h1 aria-label="About"></h1>`
+- Main heading content: `<h1>About</h1>`
+- Document title: `<title>About</title>`
+- Page URL: `/about/`
+
+The easiest way to announce a page title differing from the main heading is using `aria-label`:
 
 ```html
 <h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
@@ -81,9 +92,11 @@ All options with their default values:
 {
   contentSelector: 'main',
   headingSelector: 'h1, h2, [role=heading]',
-  announcementTemplate: 'Navigated to: {title}',
-  urlTemplate: 'New page at {url}',
-  respectReducedMotion: false
+  respectReducedMotion: false,
+  announcements: {
+    visit: 'Navigated to: {title}',
+    url: 'New page at {url}'
+  }
 }
 ```
 
@@ -99,16 +112,6 @@ The selector for finding headings **inside the main content area**.
 
 The first heading's content will be read to screen readers after a new page was loaded.
 
-### announcementTemplate
-
-How to announce the new page title.
-
-### urlTemplate
-
-How to announce the new page url.
-
-Only used as fallback if neither a title tag nor a heading were found.
-
 ### respectReducedMotion
 
 Whether to respects users' preference for reduced motion.
@@ -117,6 +120,64 @@ Disable animated page transitions and animated scrolling if a user has enabled a
 setting on their device to minimize the amount of non-essential motion. Learn more about
 [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
 
+### announcements
+
+How the new page is announced. A visit is announced differently depending on whether the new page
+has a title or not. If found, the main heading or document title is announced. If neither is found,
+the new url will be announced instead:
+
+- **Title found?** Read `announcements.visit`, replacing `{title}` with the new title
+- **No title?** Read `announcements.visit` too, but replacing `{title}` with the content of `announcements.url`
+
+```js
+{
+  announcements: {
+    visit: 'Navigated to: {title}',
+    url: 'New page at {url}'
+  }
+}
+```
+
+#### Translations
+
+For multi-language sites, pass in a nested object keyed by locale. The locale must match the
+`html` element's [lang](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang) attribute
+exactly. Use an asterisk `*` to declare fallback translations.
+
+> **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
+[Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
+it yourself in the `content:replace` hook.
+
+```js
+{
+  announcements: {
+    'en-US': {
+      visit: 'Navigated to: {title}',
+      url: 'New page at {url}'
+    },
+    'de-DE': {
+      visit: 'Navigiert zu: {title}',
+      url: 'Neue Seite unter {url}'
+    },
+    'fr-FR': {
+      visit: 'Navigué vers : {title}',
+      url: 'Nouvelle page à {url}'
+    },
+    '*': {
+      visit: '{title}',
+      url: '{url}'
+    }
+  }
+}
+```
+
+#### Deprecated options
+
+The following two options are now grouped in the `announcements` object and deprecated.
+
+- `announcementTemplate`: equivalent to `announcements.visit`
+- `urlTemplate`: equivalent to `announcements.url`
+
 ## Visit object
 
 The plugin extends the visit object with a new `a11y` key that can be used to customize the
@@ -124,12 +185,28 @@ behavior on the fly.
 
 ```js
 {
-  from: {},
-  to: {},
+  from: { ... },
+  to: { ... },
   a11y: {
+    announce: 'Navigated to: About',
     focus: 'main'
   }
 }
+```
+
+### visit.a11y.announce
+
+The text to announce after the new page was loaded. This is the final text after choosing the
+correct language from the [announcements](#announcements) option and filling in any placeholders.
+Modify it to read a custom announcement.
+
+Since the text can only be populated once the new page was fetched and its contents are available,
+the only place to inspect or modify this would be right before the `content:announce` hook.
+
+```js
+swup.hooks.before('content:announce', (visit) => {
+  visit.a11y.announce = 'New page loaded';
+});
 ```
 
 ### visit.a11y.focus
@@ -140,9 +217,21 @@ selector `string` to select an element, or set it to `false` to not move the foc
 
 ## Hooks
 
-The plugin adds a new hook: `content:focus`. It is run after `content:replace`, when the new
-content is already in the DOM.
+The plugin adds two new hooks: `content:announce` and `content:focus`. Both run directly
+after the internal `content:replace` handler, when the new content is already in the DOM.
+
+### content:announce
+
+Executes the announcement of the new page title.
 
 ```js
-swup.hooks.on('content:focus', () => console.log('Swup has focussed new content'));
+swup.hooks.on('content:announce', () => console.log('New content was announced'));
+```
+
+### content:focus
+
+Executes the focussing of the new main content container.
+
+```js
+swup.hooks.on('content:focus', () => console.log('New content received focus'));
 ```
