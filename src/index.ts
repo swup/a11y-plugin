@@ -1,4 +1,4 @@
-import { Visit, nextTick } from 'swup';
+import { Location, Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
@@ -137,9 +137,9 @@ export default class SwupA11yPlugin extends Plugin {
 		if (typeof visit.a11y.announce !== 'undefined') return;
 
 		const { contentSelector, headingSelector, announcements } = this.options;
-
-		const url =  window.location.pathname;
+		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
+
 		// @ts-expect-error: indexing is messy
 		const templates: Announcements = announcements[lang] || announcements['*'] || announcements;
 		if (typeof templates !== 'object') return;
@@ -147,10 +147,10 @@ export default class SwupA11yPlugin extends Plugin {
 		// Look for first heading in content container
 		const heading = document.querySelector(`${contentSelector} ${headingSelector}`);
 		// Get page title from aria attribute or text content
-		let title = heading?.getAttribute('aria-label') || heading?.textContent || document.title;
-		// Fall back to url if no title was found
-		title = title || this.parseTemplate(templates.url, { url });
-		// Replace {title} and {url} variables in template
+		let title = heading?.getAttribute('aria-label') || heading?.textContent;
+		// Fall back to document title, then url if no title was found
+		title = title || document.title || this.parseTemplate(templates.url, { href, url, path });
+		// Replace {variables} in template
 		const announcement = this.parseTemplate(templates.visit, { title, href, url, path });
 
 		visit.a11y.announce = announcement;
