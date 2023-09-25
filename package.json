@@ -20,10 +20,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "swup-plugin build",
-    "dev": "swup-plugin dev",
-    "lint": "swup-plugin lint",
-    "format": "swup-plugin format",
+    "build": "swup package:build",
+    "dev": "swup package:dev",
+    "lint": "swup package:lint",
+    "format": "swup package:format",
     "prepublishOnly": "npm run build"
   },
   "author": {
@@ -49,9 +49,12 @@
     "url": "https://github.com/swup/a11y-plugin.git"
   },
   "dependencies": {
-    "@swup/plugin": "^3.0.0",
+    "@swup/plugin": "^4.0.0",
     "focus-options-polyfill": "^1.5.0",
     "on-demand-live-region": "^0.1.3"
+  },
+  "devDependencies": {
+    "@swup/cli": "^5.0.0"
   },
   "peerDependencies": {
     "swup": "^4.0.0"
