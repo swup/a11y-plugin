@@ -20,6 +20,12 @@ declare module 'swup' {
 		'content:announce': undefined;
 		'content:focus': undefined;
 	}
+	export interface Swup {
+		/**
+		 * Announce something programmatically
+		 */
+		announce?: SwupA11yPlugin['announce'];
+	}
 }
 
 /** Templates for announcements of the new page content. */
@@ -115,6 +121,12 @@ export default class SwupA11yPlugin extends Plugin {
 			this.before('link:self', this.disableScrollAnimations);
 			this.before('link:anchor', this.disableScrollAnimations);
 		}
+		// Announce something programmatically
+		this.swup.announce = this.announce;
+	}
+
+	unmount() {
+		this.swup.announce = undefined;
 	}
 
 	markAsBusy() {
@@ -179,6 +191,10 @@ export default class SwupA11yPlugin extends Plugin {
 		if (visit.a11y.announce) {
 			this.liveRegion.say(visit.a11y.announce);
 		}
+	}
+
+	announce = (message: string): void => {
+		this.liveRegion.say(message);
 	}
 
 	async focusPageContent(visit: Visit) {
