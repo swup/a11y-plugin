@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.2] - 2023-10-26
+
+- Add new method `swup.announce` for programmatically announcing something
+
 ## [4.4.1] - 2023-09-25
 
 - Use `@swup/cli` for bundling
@@ -42,8 +46,7 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/a11y-plugin/compare/4.4.1...HEAD
-
+[4.4.2]: https://github.com/swup/a11y-plugin/releases/tag/4.4.2
 [4.4.1]: https://github.com/swup/a11y-plugin/releases/tag/4.4.1
 [4.4.0]: https://github.com/swup/a11y-plugin/releases/tag/4.4.0
 [4.3.0]: https://github.com/swup/a11y-plugin/releases/tag/4.3.0

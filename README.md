@@ -235,3 +235,15 @@ Executes the focussing of the new main content container.
 ```js
 swup.hooks.on('content:focus', () => console.log('New content received focus'));
 ```
+
+## Methods on the swup instance
+
+The plugin adds the following method to the swup instance:
+
+### announce
+
+Announce something programmatically. Use this if you are making use of [`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want state changes to be announced.
+
+```js
+swup.announce?.(`Filtered by ${myFilterString}`);
+```
