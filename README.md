@@ -93,6 +93,7 @@ All options with their default values:
   contentSelector: 'main',
   headingSelector: 'h1, h2, [role=heading]',
   respectReducedMotion: false,
+  autofocus: false,
   announcements: {
     visit: 'Navigated to: {title}',
     url: 'New page at {url}'
@@ -119,6 +120,15 @@ Whether to respects users' preference for reduced motion.
 Disable animated page transitions and animated scrolling if a user has enabled a
 setting on their device to minimize the amount of non-essential motion. Learn more about
 [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
+
+### autofocus
+
+Whether to focus elements with an `autofocus` attribute after navigation.
+
+Make sure to use this wisely. Automatically focussing elements can be useful to draw attention to
+inputs, but it comes with a list of drawbacks on its own, especially for screen-reading technology.
+See [Autofocus accessibility considerations](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)
+for details.
 
 ### announcements
 

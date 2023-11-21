@@ -52,6 +52,8 @@ type Options = {
 	respectReducedMotion: boolean;
 	/** How to announce the new page title and url. */
 	announcements: Announcements | AnnouncementTranslations;
+	/** Whether to focus elements with an [autofocus] attribute after navigation. */
+	autofocus: boolean;
 
 	/** How to announce the new page. @deprecated Use the `announcements` option.  */
 	announcementTemplate?: string;
@@ -68,6 +70,7 @@ export default class SwupA11yPlugin extends Plugin {
 		contentSelector: 'main',
 		headingSelector: 'h1, h2, [role=heading]',
 		respectReducedMotion: false,
+		autofocus: false,
 		announcements: {
 			visit: 'Navigated to: {title}',
 			url: 'New page at {url}'
@@ -121,6 +124,7 @@ export default class SwupA11yPlugin extends Plugin {
 			this.before('link:self', this.disableScrollAnimations);
 			this.before('link:anchor', this.disableScrollAnimations);
 		}
+
 		// Announce something programmatically
 		this.swup.announce = this.announce;
 	}
@@ -198,14 +202,35 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	async focusPageContent(visit: Visit) {
+		// Focus disabled for this visit?
 		if (!visit.a11y.focus) return;
 
+		// Found [autofocus] element?
+		if (this.options.autofocus) {
+			const focusEl = this.getAutofocusElement();
+			if (focusEl) {
+				this.swup.hooks.once('visit:end', (v) => {
+					if (v.id !== visit.id) return;
+					focusEl.focus();
+				});
+				return;
+			}
+		}
+
+		// Otherwise, find content container and focus it
 		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
 		if (content instanceof HTMLElement) {
 			if (this.needsTabindex(content)) {
 				content.setAttribute('tabindex', '-1');
 			}
 			content.focus({ preventScroll: true });
+		}
+	}
+
+	getAutofocusElement(): HTMLElement | undefined {
+		const focusEl = document.querySelector<HTMLElement>('body [autofocus]');
+		if (focusEl && !focusEl.closest('inert, [aria-disabled], [aria-hidden="true"]')) {
+			return focusEl;
 		}
 	}
 
