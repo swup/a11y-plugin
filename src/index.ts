@@ -207,11 +207,11 @@ export default class SwupA11yPlugin extends Plugin {
 
 		// Found [autofocus] element?
 		if (this.options.autofocus) {
-			const focusEl = this.getAutofocusElement();
-			if (focusEl) {
+			const autofocusEl = this.getAutofocusElement();
+			if (autofocusEl && autofocusEl !== document.activeElement) {
 				this.swup.hooks.once('visit:end', (v) => {
 					if (v.id !== visit.id) return;
-					focusEl.focus();
+					autofocusEl.focus();
 				});
 				return;
 			}
