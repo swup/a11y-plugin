@@ -89,7 +89,7 @@ export default class SwupA11yPlugin extends Plugin {
 			...this.defaults.announcements,
 			visit: options.announcementTemplate ?? this.defaults.announcements.visit,
 			url: options.urlTemplate ?? this.defaults.announcements.url,
-			...options.announcements,
+			...options.announcements
 		};
 
 		// Merge default options with user defined options
@@ -199,7 +199,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announce = (message: string): void => {
 		this.liveRegion.say(message);
-	}
+	};
 
 	async focusPageContent(visit: Visit) {
 		// Focus disabled for this visit?
