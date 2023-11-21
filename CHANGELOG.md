@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.5.0] - 2023-11-21
+
+- Add option to focus `autofocus` elements
+
 ## [4.4.2] - 2023-10-26
 
 - Add new method `swup.announce` for programmatically announcing something
@@ -46,6 +50,7 @@
 
 - Initial release
 
+[4.5.0]: https://github.com/swup/a11y-plugin/releases/tag/4.5.0
 [4.4.2]: https://github.com/swup/a11y-plugin/releases/tag/4.4.2
 [4.4.1]: https://github.com/swup/a11y-plugin/releases/tag/4.4.1
 [4.4.0]: https://github.com/swup/a11y-plugin/releases/tag/4.4.0
