@@ -54,6 +54,8 @@ type Options = {
 	announcements: Announcements | AnnouncementTranslations;
 	/** Whether to focus elements with an [autofocus] attribute after navigation. */
 	autofocus: boolean;
+	/** a delay after which announcement will be pronounced by screen reader. */
+	delay: number;
 
 	/** How to announce the new page. @deprecated Use the `announcements` option.  */
 	announcementTemplate?: string;
@@ -74,7 +76,8 @@ export default class SwupA11yPlugin extends Plugin {
 		announcements: {
 			visit: 'Navigated to: {title}',
 			url: 'New page at {url}'
-		}
+		},
+		delay: 100
 	};
 
 	options: Options;
@@ -193,12 +196,12 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
-			this.liveRegion.say(visit.a11y.announce);
+			this.liveRegion.say(visit.a11y.announce, this.options.delay);
 		}
 	}
 
-	announce = (message: string): void => {
-		this.liveRegion.say(message);
+	announce = (message: string, delay: number = this.options.delay): void => {
+		this.liveRegion.say(message, delay);
 	};
 
 	async focusPageContent(visit: Visit) {

@@ -97,7 +97,8 @@ All options with their default values:
   announcements: {
     visit: 'Navigated to: {title}',
     url: 'New page at {url}'
-  }
+  },
+  timeout: 100,
 }
 ```
 
@@ -180,6 +181,11 @@ it yourself in the `content:replace` hook.
   }
 }
 ```
+### delay
+A delay in milliseconds after which screen reader will pronounce the text.
+0ms delay is not recommended since in that case some screen readers may not pronounce the text
+
+
 
 #### Deprecated options
 
@@ -252,8 +258,12 @@ The plugin adds the following method to the swup instance:
 
 ### announce
 
+```js
+swup.announce?.(message, delay = this.options.delay);
+```
+
 Announce something programmatically. Use this if you are making use of [`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want state changes to be announced.
 
 ```js
-swup.announce?.(`Filtered by ${myFilterString}`);
+swup.announce?.(`Filtered by ${myFilterString}`, 50);
 ```
