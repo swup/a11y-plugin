@@ -1,7 +1,7 @@
 # Changelog
 
 ## [4.6.0] - 2024-01-23
-- Add option to set timeout for announcement
+- Add option to set delay for announcement
 - Fix bug when screen reader sometimes did not pronounce updated text
 
 ## [4.5.0] - 2023-11-21
