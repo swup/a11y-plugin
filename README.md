@@ -98,7 +98,7 @@ All options with their default values:
     visit: 'Navigated to: {title}',
     url: 'New page at {url}'
   },
-  timeout: 100,
+  delay: 100,
 }
 ```
 
