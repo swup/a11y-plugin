@@ -1,7 +1,6 @@
 # Changelog
 
-## [4.6.0] - 2024-01-23
-- Add option to set delay for announcement
+## [4.5.1] - 2024-01-23
 - Fix bug when screen reader sometimes did not pronounce updated text
 
 ## [4.5.0] - 2023-11-21
@@ -54,6 +53,7 @@
 
 - Initial release
 
+[4.5.1]: https://github.com/swup/a11y-plugin/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/a11y-plugin/releases/tag/4.5.0
 [4.4.2]: https://github.com/swup/a11y-plugin/releases/tag/4.4.2
 [4.4.1]: https://github.com/swup/a11y-plugin/releases/tag/4.4.1

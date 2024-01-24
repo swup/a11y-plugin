@@ -54,8 +54,6 @@ type Options = {
 	announcements: Announcements | AnnouncementTranslations;
 	/** Whether to focus elements with an [autofocus] attribute after navigation. */
 	autofocus: boolean;
-	/** a delay after which announcement will be pronounced by screen reader. */
-	delay: number;
 
 	/** How to announce the new page. @deprecated Use the `announcements` option.  */
 	announcementTemplate?: string;
@@ -76,8 +74,7 @@ export default class SwupA11yPlugin extends Plugin {
 		announcements: {
 			visit: 'Navigated to: {title}',
 			url: 'New page at {url}'
-		},
-		delay: 100
+		}
 	};
 
 	options: Options;
@@ -196,11 +193,12 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
-			this.liveRegion.say(visit.a11y.announce, this.options.delay);
+	    // a delay of 200 is required to make sure that text will be pronounced by screen reader.
+			this.liveRegion.say(visit.a11y.announce, 200);
 		}
 	}
 
-	announce = (message: string, delay: number = this.options.delay): void => {
+	announce = (message: string, delay: number = 50): void => {
 		this.liveRegion.say(message, delay);
 	};
 
@@ -214,7 +212,9 @@ export default class SwupA11yPlugin extends Plugin {
 			if (autofocusEl && autofocusEl !== document.activeElement) {
 				this.swup.hooks.once('visit:end', (v) => {
 					if (v.id !== visit.id) return;
-					autofocusEl.focus();
+          setTimeout(() => {
+					  autofocusEl.focus();
+          }, 200);
 				});
 				return;
 			}
@@ -226,7 +226,9 @@ export default class SwupA11yPlugin extends Plugin {
 			if (this.needsTabindex(content)) {
 				content.setAttribute('tabindex', '-1');
 			}
-			content.focus({ preventScroll: true });
+      setTimeout(() => {
+        content.focus({ preventScroll: true });
+      }, 200);
 		}
 	}
 
