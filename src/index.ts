@@ -182,10 +182,10 @@ export default class SwupA11yPlugin extends Plugin {
 		// We can't `await` nextTick() here because it would block ViewTransition callbacks
 		// Apparently, during ViewTransition updates there is no microtask queue
 		nextTick().then(async () => {
-			this.swup.hooks.call('content:announce', undefined, (visit) => {
+			this.swup.hooks.call('content:announce', undefined, undefined, (visit) => {
 				this.announcePageName(visit);
 			});
-			this.swup.hooks.call('content:focus', undefined, (visit) => {
+			this.swup.hooks.call('content:focus', undefined, undefined, (visit) => {
 				this.focusPageContent(visit);
 			});
 		});
