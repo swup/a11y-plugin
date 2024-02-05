@@ -193,12 +193,13 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
-			this.liveRegion.say(visit.a11y.announce);
+	    // a delay of 200 is required to make sure that text will be pronounced by screen reader.
+			this.liveRegion.say(visit.a11y.announce, 200);
 		}
 	}
 
-	announce = (message: string): void => {
-		this.liveRegion.say(message);
+	announce = (message: string, delay: number = 50): void => {
+		this.liveRegion.say(message, delay);
 	};
 
 	async focusPageContent(visit: Visit) {
@@ -211,7 +212,9 @@ export default class SwupA11yPlugin extends Plugin {
 			if (autofocusEl && autofocusEl !== document.activeElement) {
 				this.swup.hooks.once('visit:end', (v) => {
 					if (v.id !== visit.id) return;
-					autofocusEl.focus();
+          setTimeout(() => {
+					  autofocusEl.focus();
+          }, 200);
 				});
 				return;
 			}
@@ -223,7 +226,9 @@ export default class SwupA11yPlugin extends Plugin {
 			if (this.needsTabindex(content)) {
 				content.setAttribute('tabindex', '-1');
 			}
-			content.focus({ preventScroll: true });
+      setTimeout(() => {
+        content.focus({ preventScroll: true });
+      }, 200);
 		}
 	}
 

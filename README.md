@@ -97,7 +97,7 @@ All options with their default values:
   announcements: {
     visit: 'Navigated to: {title}',
     url: 'New page at {url}'
-  }
+  },
 }
 ```
 
@@ -181,6 +181,7 @@ it yourself in the `content:replace` hook.
 }
 ```
 
+
 #### Deprecated options
 
 The following two options are now grouped in the `announcements` object and deprecated.
@@ -252,8 +253,12 @@ The plugin adds the following method to the swup instance:
 
 ### announce
 
+```js
+swup.announce?.(message, delay = 50);
+```
+
 Announce something programmatically. Use this if you are making use of [`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want state changes to be announced.
 
 ```js
-swup.announce?.(`Filtered by ${myFilterString}`);
+swup.announce?.(`Filtered by ${myFilterString}`, 100);
 ```
