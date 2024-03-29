@@ -69,21 +69,6 @@ The easiest way to announce a page title differing from the main heading is usin
 <h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
 ```
 
-## Styling
-
-Browsers will display a visible outline around the main content area when it
-receives focus after navigation. Make sure to remove the outline in your CSS
-if that isn't the desired behavior.
-
-See these guides on [Controlling focus](https://web.dev/control-focus-with-tabindex/)
-and [Styling focus](https://web.dev/style-focus/) for details and more examples.
-
-```css
-main:focus {
-  outline: none;
-}
-```
-
 ## Options
 
 All options with their default values:
