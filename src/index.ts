@@ -242,9 +242,7 @@ export default class SwupA11yPlugin extends Plugin {
 	};
 
 	setFocusStartPoint(element: HTMLElement) {
-		const needsTabindexToFocus = this.needsTabindexToFocus(element);
-
-		if (!needsTabindexToFocus) {
+		if (this.isTabbable(element)) {
 			element.focus();
 			return;
 		}
@@ -281,7 +279,7 @@ export default class SwupA11yPlugin extends Plugin {
 		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	}
 
-	needsTabindexToFocus(el: HTMLElement): boolean {
-		return !el.matches('a, button, input, textarea, select, details, [tabindex]');
+	isTabbable(el: HTMLElement): boolean {
+		return el.matches('a, button, input, textarea, select, details, [tabindex]');
 	}
 }
