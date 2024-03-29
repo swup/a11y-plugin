@@ -222,11 +222,8 @@ export default class SwupA11yPlugin extends Plugin {
 
 		// Otherwise, find content container and focus it
 		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-		if (content instanceof HTMLElement) {
-			if (this.needsTabindex(content)) {
-				content.setAttribute('tabindex', '-1');
-			}
-			content.focus({ preventScroll: true });
+		if (content && content instanceof HTMLElement) {
+			this.setFocusStartPoint(content);
 		}
 	}
 
@@ -245,17 +242,30 @@ export default class SwupA11yPlugin extends Plugin {
 	};
 
 	setFocusStartPoint(element: HTMLElement) {
-		const tabindex = element.getAttribute('tabindex');
+		const needsTabindexToFocus = this.needsTabindexToFocus(element);
 
-		element.setAttribute('tabindex', '-1');
-		element.focus();
-		element.blur();
-
-		if (tabindex) {
-			element.setAttribute('tabindex', tabindex);
-		} else {
-			element.removeAttribute('tabindex');
+		if (!needsTabindexToFocus) {
+			element.focus();
+			return;
 		}
+
+		const focusElement = this.createInvisibleFocusElement();
+		element.prepend(focusElement);
+		focusElement.focus({ preventScroll: true });
+		focusElement.remove();
+	}
+
+	createInvisibleFocusElement() {
+		const element = document.createElement('div');
+		element.setAttribute('tabindex', '-1');
+		element.style.position = 'absolute';
+		element.style.width = '1px';
+		element.style.height = '1px';
+		element.style.overflow = 'hidden';
+		element.style.clip = 'rect(1px, 1px, 1px, 1px)';
+		element.style.clipPath = 'inset(50%)';
+		element.style.outline = 'none';
+		return element;
 	}
 
 	disableTransitionAnimations(visit: Visit) {
@@ -271,7 +281,7 @@ export default class SwupA11yPlugin extends Plugin {
 		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	}
 
-	needsTabindex(el: HTMLElement): boolean {
+	needsTabindexToFocus(el: HTMLElement): boolean {
 		return !el.matches('a, button, input, textarea, select, details, [tabindex]');
 	}
 }
