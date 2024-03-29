@@ -1,4 +1,4 @@
-import { Location, Visit, nextTick } from 'swup';
+import { HookDefaultHandler, HookHandler, Location, Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
 import OnDemandLiveRegion from 'on-demand-live-region';
 
@@ -117,6 +117,9 @@ export default class SwupA11yPlugin extends Plugin {
 		// Announce new page and focus container after content is replaced
 		this.on('content:replace', this.handleNewPageContent);
 
+		// Move focus start point when clicking on-page anchors
+		this.on('scroll:anchor', this.handleAnchorScroll);
+
 		// Disable transition and scroll animations if user prefers reduced motion
 		if (this.options.respectReducedMotion) {
 			this.before('visit:start', this.disableTransitionAnimations);
@@ -231,6 +234,27 @@ export default class SwupA11yPlugin extends Plugin {
 		const focusEl = document.querySelector<HTMLElement>('body [autofocus]');
 		if (focusEl && !focusEl.closest('inert, [aria-disabled], [aria-hidden="true"]')) {
 			return focusEl;
+		}
+	}
+
+	handleAnchorScroll: HookHandler<'scroll:anchor'> = (visit, { hash }) => {
+		const anchor = this.swup.getAnchorElement(hash);
+		if (anchor && anchor instanceof HTMLElement) {
+			this.setFocusStartPoint(anchor);
+		}
+	};
+
+	setFocusStartPoint(element: HTMLElement) {
+		const tabindex = element.getAttribute('tabindex');
+
+		element.setAttribute('tabindex', '-1');
+		element.focus();
+		element.blur();
+
+		if (tabindex) {
+			element.setAttribute('tabindex', tabindex);
+		} else {
+			element.removeAttribute('tabindex');
 		}
 	}
 
