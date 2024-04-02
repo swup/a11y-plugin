@@ -85,8 +85,8 @@ export default class SwupA11yPlugin extends Plugin {
 		// Merge deprecated announcement templates into new structure
 		options.announcements = {
 			...this.defaults.announcements,
-			visit: options.announcementTemplate ?? this.defaults.announcements.visit,
-			url: options.urlTemplate ?? this.defaults.announcements.url,
+			visit: options.announcementTemplate ?? String(this.defaults.announcements.visit),
+			url: options.urlTemplate ?? String(this.defaults.announcements.url),
 			...options.announcements
 		};
 
