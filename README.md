@@ -44,11 +44,11 @@ content, i.e. `main` for your content area and `h1` or `h2` for your headings.
 See the options below for customizing what elements to look for.
 
 ```html
-<header>Logo</header>
-<main>
-  <!-- will be focussed -->
-  <h1>Page Title</h1>
-  <!-- will be announced -->
+<header>
+  Logo
+</header>
+<main> <!-- will be focussed -->
+  <h1>Page Title</h1> <!-- will be announced -->
   <p>Lorem ipsum dolor sit amet</p>
 </main>
 ```
@@ -66,8 +66,7 @@ following and announce the first one found:
 The easiest way to announce a page title differing from the main heading is using `aria-label`:
 
 ```html
-<h1 aria-label="Homepage">Project Title</h1>
-<!-- will announce 'Homepage' -->
+<h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
 ```
 
 ## Styling
@@ -156,8 +155,8 @@ For multi-language sites, pass in a nested object keyed by locale. The locale mu
 exactly. Use an asterisk `*` to declare fallback translations.
 
 > **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
-> [Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
-> it yourself in the `content:replace` hook.
+[Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
+it yourself in the `content:replace` hook.
 
 ```js
 {
