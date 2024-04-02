@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.5.1] - 2024-04-02
+
+- Fix the type signature of `AnnouncementTranslations`
+
 ## [4.5.0] - 2023-11-21
 
 - Add option to focus `autofocus` elements
@@ -50,6 +54,7 @@
 
 - Initial release
 
+[4.5.1]: https://github.com/swup/a11y-plugin/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/a11y-plugin/releases/tag/4.5.0
 [4.4.2]: https://github.com/swup/a11y-plugin/releases/tag/4.4.2
 [4.4.1]: https://github.com/swup/a11y-plugin/releases/tag/4.4.1
