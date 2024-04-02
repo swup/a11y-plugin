@@ -1,6 +1,7 @@
 import { Location, Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
-import OnDemandLiveRegion from 'on-demand-live-region';
+
+import Announcer from './announcer.js';
 
 import 'focus-options-polyfill';
 
@@ -77,7 +78,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	options: Options;
 
-	liveRegion: OnDemandLiveRegion;
+	announcer: Announcer;
 
 	constructor(options: Partial<Options> = {}) {
 		super();
@@ -93,8 +94,8 @@ export default class SwupA11yPlugin extends Plugin {
 		// Merge default options with user defined options
 		this.options = { ...this.defaults, ...options };
 
-		// Create live region for announcing new page content
-		this.liveRegion = new OnDemandLiveRegion();
+		// Create announcer instance for announcing new page content
+		this.announcer = new Announcer();
 	}
 
 	mount() {
@@ -191,12 +192,12 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
-			this.liveRegion.say(visit.a11y.announce);
+			this.announcer.announce(visit.a11y.announce);
 		}
 	}
 
 	announce = (message: string): void => {
-		this.liveRegion.say(message);
+		this.announcer.announce(message);
 	};
 
 	async focusPageContent(visit: Visit) {
