@@ -1,9 +1,11 @@
 import { createElement } from './util.js';
 
 export default class Announcer {
-	liveRegion: Element;
-	liveRegionId: string = 'swup-announcer';
-	liveRegionStyles: string = `
+	region: Element;
+
+	id: string = 'swup-announcer';
+
+	style: string = `
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -17,16 +19,16 @@ export default class Announcer {
 	`;
 
 	constructor() {
-		this.liveRegion = this.getLiveRegion() ?? this.createLiveRegion();
+		this.region = this.get() ?? this.create();
 	}
 
-	getLiveRegion() {
-		return document.getElementById(this.liveRegionId);
+	protected get(): HTMLElement | null {
+		return document.getElementById(this.id);
 	}
 
-	createLiveRegion() {
+	protected create(): Element {
 		const liveRegion = createElement(
-			`<p aria-live="assertive" aria-atomic="true" id="${this.liveRegionId}" style="${this.liveRegionStyles}"></p>`
+			`<p aria-live="assertive" aria-atomic="true" id="${this.id}" style="${this.style}"></p>`
 		);
 		document.body.appendChild(liveRegion);
 		return liveRegion;
@@ -34,7 +36,7 @@ export default class Announcer {
 
 	announce(message: string) {
 		setTimeout(() => {
-			this.liveRegion.textContent = message;
+			this.region.textContent = message;
 		});
 	}
 }
