@@ -39,8 +39,6 @@ type Announcements = {
 /** Translations of announcements, keyed by language. */
 type AnnouncementTranslations = {
 	[lang: string]: Announcements;
-} & {
-	[key in keyof Announcements]: string;
 };
 
 type Options = {
@@ -156,8 +154,8 @@ export default class SwupA11yPlugin extends Plugin {
 		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
 
-		// @ts-expect-error: indexing is messy
-		const templates: Announcements = announcements[lang] || announcements['*'] || announcements;
+		const templates: Announcements =
+			(announcements as AnnouncementTranslations)[lang] || announcements;
 		if (typeof templates !== 'object') return;
 
 		// Look for first heading in content container
