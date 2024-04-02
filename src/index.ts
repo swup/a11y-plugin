@@ -154,7 +154,8 @@ export default class SwupA11yPlugin extends Plugin {
 		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
 
-		const templates: Announcements = (announcements as AnnouncementTranslations)[lang] || announcements;
+		const templates: Announcements =
+			(announcements as AnnouncementTranslations)[lang] || announcements;
 		if (typeof templates !== 'object') return;
 
 		// Look for first heading in content container
