@@ -9,6 +9,10 @@ shortcomings for screen reader users. This plugin will improve that:
 - **Focus the main content area** after swapping out the content
 - **Skip animations** for users with a preference for reduced motion
 
+Accessibility can be hard to get right. That's why we're keen to hear your feedback. Share your
+experience and suggest improvements by [opening an issue](https://github.com/swup/a11y-plugin/issues/new/choose)
+on this repo. Let's make swup better together!
+
 ## Installation
 
 Install the plugin from npm and import it into your bundle.
