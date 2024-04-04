@@ -19,14 +19,14 @@ export default class Announcer {
 	`;
 
 	constructor() {
-		this.region = this.get() ?? this.create();
+		this.region = this.getRegion() ?? this.createRegion();
 	}
 
-	protected get(): HTMLElement | null {
+	getRegion(): HTMLElement | null {
 		return document.getElementById(this.id);
 	}
 
-	protected create(): Element {
+	createRegion(): Element {
 		const liveRegion = createElement(
 			`<p aria-live="assertive" aria-atomic="true" id="${this.id}" style="${this.style}"></p>`
 		);
@@ -34,9 +34,9 @@ export default class Announcer {
 		return liveRegion;
 	}
 
-	announce(message: string) {
+	announce(message: string, delay: number = 0) {
 		setTimeout(() => {
 			this.region.textContent = message;
-		});
+		}, delay);
 	}
 }
