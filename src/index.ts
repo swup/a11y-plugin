@@ -66,7 +66,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	defaults: Options = {
 		contentSelector: 'body',
-		headingSelector: 'h1, h2, [role=heading]',
+		headingSelector: 'h1',
 		respectReducedMotion: false,
 		autofocus: false,
 		announcements: {
@@ -160,10 +160,18 @@ export default class SwupA11yPlugin extends Plugin {
 
 		// Look for first heading on page
 		const heading = document.querySelector(headingSelector);
+		if (!heading) {
+			console.warn(
+				`SwupA11yPlugin: No main heading (${headingSelector}) found in content container`
+			);
+		}
+
 		// Get page title from aria attribute or text content
 		let title = heading?.getAttribute('aria-label') || heading?.textContent;
+
 		// Fall back to document title, then url if no title was found
 		title = title || document.title || this.parseTemplate(templates.url, { href, url, path });
+
 		// Replace {variables} in template
 		const announcement = this.parseTemplate(templates.visit, { title, href, url, path });
 
