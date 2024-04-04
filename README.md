@@ -6,7 +6,7 @@ Loading new content via AJAX is a great experience for most users, but comes wit
 shortcomings for screen reader users. This plugin will improve that:
 
 - **Announce page visits** to screenreaders by reading the new page title
-- **Focus the main content area** after swapping out the content
+- **Restore focus** after swapping out the content
 - **Skip animations** for users with a preference for reduced motion
 
 Accessibility can be hard to get right. That's why we're keen to hear your feedback. Share your
@@ -43,19 +43,20 @@ const swup = new Swup({
 
 ## Markup
 
-The plugin should work out of the box if you use proper semantic markup for your
-content, i.e. `main` for your content area and `h1` for your headings.
-See the options below for customizing what elements to look for.
+The plugin should work out of the box if you use proper semantic markup for your content, i.e. a
+descriptive `h1` for each page heading. See the options below for customizing what tags to look for.
 
 <!-- prettier-ignore -->
 ```html
-<header>
-  Logo
-</header>
-<main> <!-- will be focussed -->
-  <h1>Page Title</h1> <!-- will be announced -->
-  <p>Lorem ipsum dolor sit amet</p>
-</main>
+<body> <!-- will be focussed -->
+  <header>
+    Logo
+  </header>
+  <main>
+    <h1>Page Title</h1> <!-- will be announced -->
+    <p>Lorem ipsum dolor sit amet</p>
+  </main>
+</body>
 ```
 
 ## Announcements
@@ -63,31 +64,16 @@ See the options below for customizing what elements to look for.
 The plugin will announce the new page to screen readers after navigating to it. It will look for the
 following and announce the first one found:
 
-- Main heading label: `<h1 aria-label="About"></h1>`
-- Main heading content: `<h1>About</h1>`
+- Heading label: `<h1 aria-label="About"></h1>`
+- Heading content: `<h1>About</h1>`
 - Document title: `<title>About</title>`
 - Page URL: `/about/`
 
-The easiest way to announce a page title differing from the main heading is using `aria-label`:
+The easiest way to announce a page title differing from the main heading is using `aria-label`. The
+example below will be announced as `Homepage`.
 
-<!-- prettier-ignore -->
 ```html
-<h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
-```
-
-## Styling
-
-Browsers will display a visible outline around the main content area when it
-receives focus after navigation. Make sure to remove the outline in your CSS
-if that isn't the desired behavior.
-
-See these guides on [Controlling focus](https://web.dev/control-focus-with-tabindex/)
-and [Styling focus](https://web.dev/style-focus/) for details and more examples.
-
-```css
-main:focus {
-  outline: none;
-}
+<h1 aria-label="Homepage">Project Title</h1>
 ```
 
 ## Options
@@ -96,7 +82,7 @@ All options with their default values:
 
 ```javascript
 {
-  contentSelector: 'main',
+  contentSelector: 'body',
   headingSelector: 'h1',
   respectReducedMotion: false,
   autofocus: false,
@@ -109,15 +95,13 @@ All options with their default values:
 
 ### contentSelector
 
-The selector for matching the main content area of the page.
-
-This area will receive focus after a new page was loaded.
+The root element that will receive focus after a new page was loaded. Most users expect the focus
+to be reset to the body.
 
 ### headingSelector
 
-The selector for finding headings **inside the main content area**.
-
-The content of the first found heading will be read to screen readers after a new page was loaded.
+The selector for finding page headings. The content of the first found heading will be read to
+screenreaders after a new page was loaded.
 
 ### respectReducedMotion
 
@@ -205,7 +189,7 @@ behavior on the fly.
   to: { ... },
   a11y: {
     announce: 'Navigated to: About',
-    focus: 'main'
+    focus: 'body'
   }
 }
 ```
@@ -246,7 +230,7 @@ swup.hooks.on('content:announce', () => console.log('New content was announced')
 
 ### content:focus
 
-Executes the focussing of the new main content container.
+Executes the focussing of the new page.
 
 ```js
 swup.hooks.on('content:focus', () => console.log('New content received focus'));
@@ -258,7 +242,9 @@ The plugin adds the following method to the swup instance:
 
 ### announce
 
-Announce something programmatically. Use this if you are making use of [`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want state changes to be announced.
+Announce something programmatically. Use this if you are making use of
+[`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want
+state changes to be announced.
 
 ```js
 swup.announce?.(`Filtered by ${myFilterString}`);
