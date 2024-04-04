@@ -66,7 +66,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	defaults: Options = {
 		contentSelector: 'main',
-		headingSelector: 'h1, h2, [role=heading]',
+		headingSelector: 'h1',
 		respectReducedMotion: false,
 		autofocus: false,
 		announcements: {
