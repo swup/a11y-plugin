@@ -217,11 +217,16 @@ export default class SwupA11yPlugin extends Plugin {
 
 		// Otherwise, find content container and focus it
 		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-		if (content instanceof HTMLElement) {
-			if (this.needsTabindex(content)) {
-				content.setAttribute('tabindex', '-1');
-			}
-			content.focus({ preventScroll: true });
+		if (!(content instanceof HTMLElement)) return;
+
+		// Set and restore tabindex to allow focusing non-focusable elements
+		const tabindex = content.getAttribute('tabindex');
+		content.setAttribute('tabindex', '-1');
+		content.focus({ preventScroll: true });
+		if (tabindex !== null) {
+			content.setAttribute('tabindex', tabindex);
+		} else {
+			content.removeAttribute('tabindex');
 		}
 	}
 
