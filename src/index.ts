@@ -161,7 +161,9 @@ export default class SwupA11yPlugin extends Plugin {
 		// Look for first heading in content container
 		const heading = document.querySelector(`${contentSelector} ${headingSelector}`);
 		if (!heading) {
-			console.warn(`SwupA11yPlugin: No main heading (${headingSelector}) found in content container`);
+			console.warn(
+				`SwupA11yPlugin: No main heading (${headingSelector}) found in content container`
+			);
 		}
 
 		// Get page title from aria attribute or text content
