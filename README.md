@@ -47,6 +47,7 @@ The plugin should work out of the box if you use proper semantic markup for your
 content, i.e. `main` for your content area and `h1` for your headings.
 See the options below for customizing what elements to look for.
 
+<!-- prettier-ignore -->
 ```html
 <header>
   Logo
@@ -69,6 +70,7 @@ following and announce the first one found:
 
 The easiest way to announce a page title differing from the main heading is using `aria-label`:
 
+<!-- prettier-ignore -->
 ```html
 <h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
 ```
