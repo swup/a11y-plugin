@@ -44,9 +44,10 @@ const swup = new Swup({
 ## Markup
 
 The plugin should work out of the box if you use proper semantic markup for your
-content, i.e. `main` for your content area and `h1` or `h2` for your headings.
+content, i.e. `main` for your content area and `h1` for your headings.
 See the options below for customizing what elements to look for.
 
+<!-- prettier-ignore -->
 ```html
 <header>
   Logo
@@ -69,6 +70,7 @@ following and announce the first one found:
 
 The easiest way to announce a page title differing from the main heading is using `aria-label`:
 
+<!-- prettier-ignore -->
 ```html
 <h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
 ```
@@ -95,7 +97,7 @@ All options with their default values:
 ```javascript
 {
   contentSelector: 'main',
-  headingSelector: 'h1, h2, [role=heading]',
+  headingSelector: 'h1',
   respectReducedMotion: false,
   autofocus: false,
   announcements: {
@@ -115,7 +117,7 @@ This area will receive focus after a new page was loaded.
 
 The selector for finding headings **inside the main content area**.
 
-The first heading's content will be read to screen readers after a new page was loaded.
+The content of the first found heading will be read to screen readers after a new page was loaded.
 
 ### respectReducedMotion
 
@@ -159,8 +161,8 @@ For multi-language sites, pass in a nested object keyed by locale. The locale mu
 exactly. Use an asterisk `*` to declare fallback translations.
 
 > **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
-[Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
-it yourself in the `content:replace` hook.
+> [Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
+> it yourself in the `content:replace` hook.
 
 ```js
 {
