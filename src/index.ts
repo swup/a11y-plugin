@@ -186,7 +186,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
-			this.announcer.announce(visit.a11y.announce);
+			this.announcer.announce(visit.a11y.announce, 100);
 		}
 	}
 
