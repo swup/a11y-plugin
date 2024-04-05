@@ -82,7 +82,6 @@ All options with their default values:
 
 ```javascript
 {
-  contentSelector: 'body',
   headingSelector: 'h1',
   respectReducedMotion: false,
   autofocus: false,
@@ -92,11 +91,6 @@ All options with their default values:
   }
 }
 ```
-
-### contentSelector
-
-The root element that will receive focus after a new page was loaded. Most users expect the focus
-to be reset to the body.
 
 ### headingSelector
 
@@ -211,9 +205,9 @@ swup.hooks.before('content:announce', (visit) => {
 
 ### visit.a11y.focus
 
-The element to receive focus after the new page was loaded. This is taken directly from the
-`contentSelector` option passed into the plugin, but can be customized per visit. Set it to a
-selector `string` to select an element, or set it to `false` to not move the focus on this visit.
+The element to receive focus after the new page was loaded, by default the `body`. Can be customized
+per visit. Set it to a selector `string` to select an element, or set it to `false` to not move the
+focus on this visit.
 
 ## Hooks
 

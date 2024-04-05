@@ -42,8 +42,6 @@ type AnnouncementTranslations = {
 };
 
 type Options = {
-	/** The selector for matching the main content area of the page. */
-	contentSelector: string;
 	/** The selector for finding headings inside the main content area. */
 	headingSelector: string;
 	/** Whether to skip animations for users that prefer reduced motion. */
@@ -65,7 +63,6 @@ export default class SwupA11yPlugin extends Plugin {
 	requires = { swup: '>=4' };
 
 	defaults: Options = {
-		contentSelector: 'body',
 		headingSelector: 'h1',
 		respectReducedMotion: false,
 		autofocus: false,
@@ -78,6 +75,8 @@ export default class SwupA11yPlugin extends Plugin {
 	options: Options;
 
 	liveRegion: OnDemandLiveRegion;
+
+	rootSelector: string = 'body';
 
 	constructor(options: Partial<Options> = {}) {
 		super();
@@ -142,7 +141,7 @@ export default class SwupA11yPlugin extends Plugin {
 	prepareVisit(visit: Visit) {
 		visit.a11y = {
 			announce: undefined,
-			focus: this.options.contentSelector
+			focus: this.rootSelector
 		};
 	}
 
