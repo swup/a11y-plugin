@@ -42,8 +42,6 @@ type AnnouncementTranslations = {
 };
 
 type Options = {
-	/** The selector for matching the main content area of the page. */
-	contentSelector: string;
 	/** The selector for finding headings inside the main content area. */
 	headingSelector: string;
 	/** Whether to skip animations for users that prefer reduced motion. */
@@ -65,7 +63,6 @@ export default class SwupA11yPlugin extends Plugin {
 	requires = { swup: '>=4' };
 
 	defaults: Options = {
-		contentSelector: 'main',
 		headingSelector: 'h1',
 		respectReducedMotion: false,
 		autofocus: false,
@@ -78,6 +75,8 @@ export default class SwupA11yPlugin extends Plugin {
 	options: Options;
 
 	liveRegion: OnDemandLiveRegion;
+
+	rootSelector: string = 'body';
 
 	constructor(options: Partial<Options> = {}) {
 		super();
@@ -142,7 +141,7 @@ export default class SwupA11yPlugin extends Plugin {
 	prepareVisit(visit: Visit) {
 		visit.a11y = {
 			announce: undefined,
-			focus: this.options.contentSelector
+			focus: this.rootSelector
 		};
 	}
 
@@ -150,7 +149,7 @@ export default class SwupA11yPlugin extends Plugin {
 		// Allow customizing announcement before this hook
 		if (typeof visit.a11y.announce !== 'undefined') return;
 
-		const { contentSelector, headingSelector, announcements } = this.options;
+		const { headingSelector, announcements } = this.options;
 		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
 
@@ -158,8 +157,8 @@ export default class SwupA11yPlugin extends Plugin {
 			(announcements as AnnouncementTranslations)[lang] || announcements;
 		if (typeof templates !== 'object') return;
 
-		// Look for first heading in content container
-		const heading = document.querySelector(`${contentSelector} ${headingSelector}`);
+		// Look for first heading on page
+		const heading = document.querySelector(headingSelector);
 		if (!heading) {
 			console.warn(
 				`SwupA11yPlugin: No main heading (${headingSelector}) found in content container`
@@ -225,11 +224,16 @@ export default class SwupA11yPlugin extends Plugin {
 
 		// Otherwise, find content container and focus it
 		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-		if (content instanceof HTMLElement) {
-			if (this.needsTabindex(content)) {
-				content.setAttribute('tabindex', '-1');
-			}
-			content.focus({ preventScroll: true });
+		if (!(content instanceof HTMLElement)) return;
+
+		// Set and restore tabindex to allow focusing non-focusable elements
+		const tabindex = content.getAttribute('tabindex');
+		content.setAttribute('tabindex', '-1');
+		content.focus({ preventScroll: true });
+		if (tabindex !== null) {
+			content.setAttribute('tabindex', tabindex);
+		} else {
+			content.removeAttribute('tabindex');
 		}
 	}
 
