@@ -186,6 +186,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	announcePageName(visit: Visit) {
 		if (visit.a11y.announce) {
+			// why the 100ms delay? see research at https://github.com/swup/a11y-plugin/pull/50
 			this.announcer.announce(visit.a11y.announce, 100);
 		}
 	}
