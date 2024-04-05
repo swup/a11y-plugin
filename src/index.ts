@@ -51,11 +51,6 @@ type Options = {
 	announcements: Announcements | AnnouncementTranslations;
 	/** Whether to focus elements with an [autofocus] attribute after navigation. */
 	autofocus: boolean;
-
-	/** How to announce the new page. @deprecated Use the `announcements` option.  */
-	announcementTemplate?: string;
-	/** How to announce a url. @deprecated Use the `announcements` option. */
-	urlTemplate?: string;
 };
 
 export default class SwupA11yPlugin extends Plugin {
@@ -81,14 +76,6 @@ export default class SwupA11yPlugin extends Plugin {
 
 	constructor(options: Partial<Options> = {}) {
 		super();
-
-		// Merge deprecated announcement templates into new structure
-		options.announcements = {
-			...this.defaults.announcements,
-			visit: options.announcementTemplate ?? String(this.defaults.announcements.visit),
-			url: options.urlTemplate ?? String(this.defaults.announcements.url),
-			...options.announcements
-		};
 
 		// Merge default options with user defined options
 		this.options = { ...this.defaults, ...options };
