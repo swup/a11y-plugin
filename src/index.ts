@@ -1,9 +1,9 @@
 import { Location, Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
 
-import Announcer from './announcer.js';
-
 import 'focus-options-polyfill';
+
+import Announcer from './announcer.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
