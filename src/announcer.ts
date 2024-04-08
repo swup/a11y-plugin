@@ -23,6 +23,12 @@ export default class Announcer {
 
 	announce(message: string, delay: number = 0) {
 		setTimeout(() => {
+			// // Fix screen readers not announcing the same message twice
+			if (this.region.textContent === message) {
+				message = `${message}.`;
+			}
+			// Clear before announcing
+			this.region.textContent = '';
 			this.region.textContent = message;
 		}, delay);
 	}
