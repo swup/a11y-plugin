@@ -242,11 +242,13 @@ export default class SwupA11yPlugin extends Plugin {
 	};
 
 	setFocusStartPoint(element: HTMLElement) {
-		if (this.isTabbable(element)) {
-			element.focus();
-			return;
-		}
+		element.focus({ preventScroll: true });
 
+		// Exit here if the element was successfully focused
+		if (element.matches(':focus')) return;
+
+		// Not focussed? Probably not a link/button/input
+		// In this case, we insert a focussable child into the element, focus it, and remove it again
 		const focusElement = this.createInvisibleFocusElement();
 		element.prepend(focusElement);
 		focusElement.focus({ preventScroll: true });
@@ -277,9 +279,5 @@ export default class SwupA11yPlugin extends Plugin {
 
 	shouldAnimate(): boolean {
 		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	}
-
-	isTabbable(el: HTMLElement): boolean {
-		return el.matches('a, button, input, textarea, select, details, [tabindex]');
 	}
 }
