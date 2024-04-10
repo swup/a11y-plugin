@@ -220,9 +220,9 @@ export default class SwupA11yPlugin extends Plugin {
 				autofocusEl.focus(); // no preventScroll flag here, as probably intended
 			}
 			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	disableTransitionAnimations(visit: Visit) {
