@@ -187,7 +187,8 @@ export default class SwupA11yPlugin extends Plugin {
 		const heading = headingEl?.getAttribute('aria-label') || headingEl?.textContent;
 
 		// Fall back to document title, then url if no title was found
-		const title = heading || document.title || parseTemplate(templates.url, { href, url, path });
+		const title =
+			heading || document.title || parseTemplate(templates.url, { href, url, path });
 
 		// Replace {variables} in template
 		const announcement = parseTemplate(templates.visit, { title, href, url, path });
