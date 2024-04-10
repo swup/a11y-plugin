@@ -215,7 +215,7 @@ export default class SwupA11yPlugin extends Plugin {
 		if (!this.options.autofocus) return false;
 
 		const autofocusEl = getAutofocusElement();
-		if (autofocusEl && autofocusEl !== document.activeElement) {
+		if (autofocusEl) {
 			if (autofocusEl !== document.activeElement) {
 				autofocusEl.focus(); // no preventScroll flag here, as probably intended
 			}
