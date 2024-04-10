@@ -142,7 +142,7 @@ export default class SwupA11yPlugin extends Plugin {
 		this.swup.hooks.callSync('content:announce', visit, undefined, (visit) => {
 			// Allow customizing announcement before this hook
 			if (typeof visit.a11y.announce === 'undefined') {
-				visit.a11y.announce = this.getDocumentTitle();
+				visit.a11y.announce = this.getPageTitle();
 			}
 
 			// Announcement disabled for this visit?
@@ -166,7 +166,7 @@ export default class SwupA11yPlugin extends Plugin {
 		});
 	}
 
-	getDocumentTitle(): string | undefined {
+	getPageTitle(): string | undefined {
 		const { headingSelector, announcements } = this.options;
 		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
