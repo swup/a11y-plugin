@@ -179,7 +179,7 @@ export default class SwupA11yPlugin extends Plugin {
 		const headingEl = document.querySelector(headingSelector);
 		if (!headingEl) {
 			console.warn(
-				`SwupA11yPlugin: No main heading (${headingSelector}) found in document`
+				`SwupA11yPlugin: No main heading (${headingSelector}) found in incoming document`
 			);
 		}
 
