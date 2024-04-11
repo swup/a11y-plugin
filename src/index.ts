@@ -1,8 +1,10 @@
 import { HookDefaultHandler, HookHandler, Location, Visit, nextTick } from 'swup';
 import Plugin from '@swup/plugin';
-import OnDemandLiveRegion from 'on-demand-live-region';
 
 import 'focus-options-polyfill';
+
+import Announcer from './announcer.js';
+import { getAutofocusElement, parseTemplate } from './util.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -50,11 +52,6 @@ type Options = {
 	announcements: Announcements | AnnouncementTranslations;
 	/** Whether to focus elements with an [autofocus] attribute after navigation. */
 	autofocus: boolean;
-
-	/** How to announce the new page. @deprecated Use the `announcements` option.  */
-	announcementTemplate?: string;
-	/** How to announce a url. @deprecated Use the `announcements` option. */
-	urlTemplate?: string;
 };
 
 export default class SwupA11yPlugin extends Plugin {
@@ -74,26 +71,18 @@ export default class SwupA11yPlugin extends Plugin {
 
 	options: Options;
 
-	liveRegion: OnDemandLiveRegion;
+	announcer: Announcer;
 
 	rootSelector: string = 'body';
 
 	constructor(options: Partial<Options> = {}) {
 		super();
 
-		// Merge deprecated announcement templates into new structure
-		options.announcements = {
-			...this.defaults.announcements,
-			visit: options.announcementTemplate ?? String(this.defaults.announcements.visit),
-			url: options.urlTemplate ?? String(this.defaults.announcements.url),
-			...options.announcements
-		};
-
 		// Merge default options with user defined options
 		this.options = { ...this.defaults, ...options };
 
-		// Create live region for announcing new page content
-		this.liveRegion = new OnDemandLiveRegion();
+		// Create announcer instance for announcing new page content
+		this.announcer = new Announcer();
 	}
 
 	mount() {
@@ -108,11 +97,11 @@ export default class SwupA11yPlugin extends Plugin {
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
 
-		// Prepare announcement by reading new page heading
-		this.on('content:replace', this.prepareAnnouncement);
+		// Focus new page content after visit completes
+		this.on('visit:end', this.focusContent);
 
-		// Announce new page and focus container after content is replaced
-		this.on('content:replace', this.handleNewPageContent);
+		// Announce new page title after visit completes
+		this.on('visit:end', this.announceContent);
 
 		// Move focus start point when clicking on-page anchors
 		this.on('scroll:anchor', this.handleAnchorScroll);
@@ -126,11 +115,15 @@ export default class SwupA11yPlugin extends Plugin {
 		}
 
 		// Announce something programmatically
-		this.swup.announce = this.announce;
+		this.swup.announce = this.announce.bind(this);
 	}
 
 	unmount() {
 		this.swup.announce = undefined;
+	}
+
+	announce(message: string): void {
+		this.announcer.announce(message);
 	}
 
 	markAsBusy() {
@@ -148,10 +141,35 @@ export default class SwupA11yPlugin extends Plugin {
 		};
 	}
 
-	prepareAnnouncement(visit: Visit) {
-		// Allow customizing announcement before this hook
-		if (typeof visit.a11y.announce !== 'undefined') return;
+	announceContent(visit: Visit) {
+		this.swup.hooks.callSync('content:announce', visit, undefined, (visit) => {
+			// Allow customizing announcement before this hook
+			if (typeof visit.a11y.announce === 'undefined') {
+				visit.a11y.announce = this.getPageTitle();
+			}
 
+			// Announcement disabled for this visit?
+			if (!visit.a11y.announce) return;
+
+			// Why the 100ms delay? see research at https://github.com/swup/a11y-plugin/pull/50
+			this.announcer.announce(visit.a11y.announce, 100);
+		});
+	}
+
+	focusContent(visit: Visit) {
+		this.swup.hooks.callSync('content:focus', visit, undefined, (visit) => {
+			// Focus disabled for this visit?
+			if (!visit.a11y.focus) return;
+
+			// Found and focused [autofocus] element? Return early
+			if (this.focusAutofocusElement() === true) return;
+
+			// Otherwise, find and focus actual content container
+			this.focusContentElement(visit.a11y.focus);
+		});
+	}
+
+	getPageTitle(): string | undefined {
 		const { headingSelector, announcements } = this.options;
 		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 		const lang = document.documentElement.lang || '*';
@@ -161,90 +179,53 @@ export default class SwupA11yPlugin extends Plugin {
 		if (typeof templates !== 'object') return;
 
 		// Look for first heading on page
-		const heading = document.querySelector(headingSelector);
-		if (!heading) {
+		const headingEl = document.querySelector(headingSelector);
+		if (!headingEl) {
 			console.warn(
-				`SwupA11yPlugin: No main heading (${headingSelector}) found in content container`
+				`SwupA11yPlugin: No main heading (${headingSelector}) found in incoming document`
 			);
 		}
 
-		// Get page title from aria attribute or text content
-		let title = heading?.getAttribute('aria-label') || heading?.textContent;
+		// Get page heading from aria attribute or text content
+		const heading = headingEl?.getAttribute('aria-label') || headingEl?.textContent;
 
 		// Fall back to document title, then url if no title was found
-		title = title || document.title || this.parseTemplate(templates.url, { href, url, path });
+		const title =
+			heading || document.title || parseTemplate(templates.url, { href, url, path });
 
 		// Replace {variables} in template
-		const announcement = this.parseTemplate(templates.visit, { title, href, url, path });
+		const announcement = parseTemplate(templates.visit, { title, href, url, path });
 
-		visit.a11y.announce = announcement;
+		return announcement;
 	}
 
-	parseTemplate(str: string, replacements: Record<string, string>): string {
-		return Object.keys(replacements).reduce((str, key) => {
-			return str.replace(`{${key}}`, replacements[key] || '');
-		}, str || '');
-	}
-
-	handleNewPageContent() {
-		// We can't `await` nextTick() here because it would block ViewTransition callbacks
-		// Apparently, during ViewTransition updates there is no microtask queue
-		nextTick().then(async () => {
-			this.swup.hooks.call('content:announce', undefined, undefined, (visit) => {
-				this.announcePageName(visit);
-			});
-			this.swup.hooks.call('content:focus', undefined, undefined, (visit) => {
-				this.focusPageContent(visit);
-			});
-		});
-	}
-
-	announcePageName(visit: Visit) {
-		if (visit.a11y.announce) {
-			this.liveRegion.say(visit.a11y.announce);
-		}
-	}
-
-	announce = (message: string): void => {
-		this.liveRegion.say(message);
-	};
-
-	async focusPageContent(visit: Visit) {
-		// Focus disabled for this visit?
-		if (!visit.a11y.focus) return;
-
-		// Found [autofocus] element?
-		if (this.options.autofocus) {
-			const autofocusEl = this.getAutofocusElement();
-			if (autofocusEl && autofocusEl !== document.activeElement) {
-				this.swup.hooks.once('visit:end', (v) => {
-					if (v.id !== visit.id) return;
-					autofocusEl.focus();
-				});
-				return;
-			}
-		}
-
-		// Otherwise, find content container and focus it
-		const content = document.querySelector<HTMLElement>(visit.a11y.focus);
-		if (!(content instanceof HTMLElement)) return;
+	focusContentElement(selector: string) {
+		const el = document.querySelector<HTMLElement>(selector);
+		if (!(el instanceof HTMLElement)) return;
 
 		// Set and restore tabindex to allow focusing non-focusable elements
-		const tabindex = content.getAttribute('tabindex');
-		content.setAttribute('tabindex', '-1');
-		content.focus({ preventScroll: true });
+		const tabindex = el.getAttribute('tabindex');
+		el.setAttribute('tabindex', '-1');
+		el.focus({ preventScroll: true });
 		if (tabindex !== null) {
-			content.setAttribute('tabindex', tabindex);
+			el.setAttribute('tabindex', tabindex);
 		} else {
-			content.removeAttribute('tabindex');
+			el.removeAttribute('tabindex');
 		}
 	}
 
-	getAutofocusElement(): HTMLElement | undefined {
-		const focusEl = document.querySelector<HTMLElement>('body [autofocus]');
-		if (focusEl && !focusEl.closest('inert, [aria-disabled], [aria-hidden="true"]')) {
-			return focusEl;
+	focusAutofocusElement(): boolean {
+		if (!this.options.autofocus) return false;
+
+		const autofocusEl = getAutofocusElement();
+		if (autofocusEl) {
+			if (autofocusEl !== document.activeElement) {
+				autofocusEl.focus(); // no preventScroll flag here, as probably intended
+			}
+			return true;
 		}
+
+		return false;
 	}
 
 	handleAnchorScroll: HookHandler<'scroll:anchor'> = (visit, { hash }) => {

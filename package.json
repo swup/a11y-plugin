@@ -41,6 +41,10 @@
       "name": "Rasso Hilber",
       "email": "mail@rassohilber.com",
       "url": "https://rassohilber.com"
+    },
+    {
+      "name": "ScoobyDid",
+      "url": "https://github.com/ScoobyDid"
     }
   ],
   "license": "MIT",
@@ -50,8 +54,7 @@
   },
   "dependencies": {
     "@swup/plugin": "^4.0.0",
-    "focus-options-polyfill": "^1.5.0",
-    "on-demand-live-region": "^0.1.3"
+    "focus-options-polyfill": "^1.5.0"
   },
   "devDependencies": {
     "@swup/cli": "^5.0.0"
