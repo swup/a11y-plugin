@@ -1,10 +1,10 @@
-import { Location, Visit, nextTick } from 'swup';
+import { HookHandler, Visit } from 'swup';
 import Plugin from '@swup/plugin';
 
 import 'focus-options-polyfill';
 
-import Announcer from './announcer.js';
-import { getAutofocusElement, parseTemplate } from './util.js';
+import { Announcer, getPageAnnouncement } from './announcements.js';
+import { focusAutofocusElement, focusElement } from './focus.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -31,7 +31,7 @@ declare module 'swup' {
 }
 
 /** Templates for announcements of the new page content. */
-type Announcements = {
+export type Announcements = {
 	/** How to announce the new page. */
 	visit: string;
 	/** How to read a page url. Used as fallback if no heading was found. */
@@ -39,11 +39,11 @@ type Announcements = {
 };
 
 /** Translations of announcements, keyed by language. */
-type AnnouncementTranslations = {
+export type AnnouncementTranslations = {
 	[lang: string]: Announcements;
 };
 
-type Options = {
+export type Options = {
 	/** The selector for finding headings inside the main content area. */
 	headingSelector: string;
 	/** Whether to skip animations for users that prefer reduced motion. */
@@ -103,6 +103,9 @@ export default class SwupA11yPlugin extends Plugin {
 		// Announce new page title after visit completes
 		this.on('visit:end', this.announceContent);
 
+		// Move focus start point when clicking on-page anchors
+		this.on('scroll:anchor', this.handleAnchorScroll);
+
 		// Disable transition and scroll animations if user prefers reduced motion
 		if (this.options.respectReducedMotion) {
 			this.before('visit:start', this.disableTransitionAnimations);
@@ -142,7 +145,7 @@ export default class SwupA11yPlugin extends Plugin {
 		this.swup.hooks.callSync('content:announce', visit, undefined, (visit) => {
 			// Allow customizing announcement before this hook
 			if (typeof visit.a11y.announce === 'undefined') {
-				visit.a11y.announce = this.getPageTitle();
+				visit.a11y.announce = this.getPageAnnouncement();
 			}
 
 			// Announcement disabled for this visit?
@@ -159,70 +162,23 @@ export default class SwupA11yPlugin extends Plugin {
 			if (!visit.a11y.focus) return;
 
 			// Found and focused [autofocus] element? Return early
-			if (this.focusAutofocusElement() === true) return;
+			if (this.options.autofocus && focusAutofocusElement() === true) return;
 
 			// Otherwise, find and focus actual content container
-			this.focusContentElement(visit.a11y.focus);
+			focusElement(visit.a11y.focus);
 		});
 	}
 
-	getPageTitle(): string | undefined {
+	handleAnchorScroll: HookHandler<'scroll:anchor'> = (visit, { hash }) => {
+		const anchor = this.swup.getAnchorElement(hash);
+		if (anchor instanceof HTMLElement) {
+			focusElement(anchor);
+		}
+	};
+
+	getPageAnnouncement(): string | undefined {
 		const { headingSelector, announcements } = this.options;
-		const { href, url, pathname: path } = Location.fromUrl(window.location.href);
-		const lang = document.documentElement.lang || '*';
-
-		const templates: Announcements =
-			(announcements as AnnouncementTranslations)[lang] || announcements;
-		if (typeof templates !== 'object') return;
-
-		// Look for first heading on page
-		const headingEl = document.querySelector(headingSelector);
-		if (!headingEl) {
-			console.warn(
-				`SwupA11yPlugin: No main heading (${headingSelector}) found in incoming document`
-			);
-		}
-
-		// Get page heading from aria attribute or text content
-		const heading = headingEl?.getAttribute('aria-label') || headingEl?.textContent;
-
-		// Fall back to document title, then url if no title was found
-		const title =
-			heading || document.title || parseTemplate(templates.url, { href, url, path });
-
-		// Replace {variables} in template
-		const announcement = parseTemplate(templates.visit, { title, href, url, path });
-
-		return announcement;
-	}
-
-	focusContentElement(selector: string) {
-		const el = document.querySelector<HTMLElement>(selector);
-		if (!(el instanceof HTMLElement)) return;
-
-		// Set and restore tabindex to allow focusing non-focusable elements
-		const tabindex = el.getAttribute('tabindex');
-		el.setAttribute('tabindex', '-1');
-		el.focus({ preventScroll: true });
-		if (tabindex !== null) {
-			el.setAttribute('tabindex', tabindex);
-		} else {
-			el.removeAttribute('tabindex');
-		}
-	}
-
-	focusAutofocusElement(): boolean {
-		if (!this.options.autofocus) return false;
-
-		const autofocusEl = getAutofocusElement();
-		if (autofocusEl) {
-			if (autofocusEl !== document.activeElement) {
-				autofocusEl.focus(); // no preventScroll flag here, as probably intended
-			}
-			return true;
-		}
-
-		return false;
+		return getPageAnnouncement({ headingSelector, announcements });
 	}
 
 	disableTransitionAnimations(visit: Visit) {
@@ -230,7 +186,7 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	disableScrollAnimations(visit: Visit) {
-		// @ts-ignore: animate property is not defined unless Scroll Plugin installed
+		// @ts-expect-error: animate property is not defined unless Scroll Plugin installed
 		visit.scroll.animate = visit.scroll.animate && this.shouldAnimate();
 	}
 

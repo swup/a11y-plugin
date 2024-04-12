@@ -48,7 +48,7 @@ descriptive `h1` for each page heading. See the options below for customizing wh
 
 <!-- prettier-ignore -->
 ```html
-<body> <!-- will be focussed -->
+<body> <!-- will be focused -->
   <header>
     Logo
   </header>
@@ -75,6 +75,34 @@ example below will be announced as `Homepage`.
 ```html
 <h1 aria-label="Homepage">Project Title</h1>
 ```
+
+## Focus
+
+On page navigation, the plugin will reset focus to the body, imitating default browser behavior.
+When clicking anchor links on the same page, the plugin will focus the target of the link.
+
+> [!TIP]
+> When linking to other sections on the page, make sure to target a single item that is descriptive
+> of the section, e.g. a heading or a button. Linking to a large container has multiple issues:
+> Some browsers will scroll to the center of the targeted container, disorienting near-sighted users
+> with increased zoom. Screen readers will also start reading out the content of the targeted
+> element, which can be overwhelming when a whole content section is being read out.
+
+## Styling
+
+Browsers will display a visible outline around elements focused by this plugin. That's great for
+orientation of keyboard users, but tends to be annoying for mouse users. We can make both groups of
+users happy by using a combination of the `:focus` and `:focus-visible` pseudo-class to hide any
+focus outlines while the site is being used with a mouse:
+
+```css
+:focus:not(:focus-visible) {
+  outline: none;
+}
+```
+
+See these guides on [Controlling focus](https://web.dev/control-focus-with-tabindex/)
+and [Styling focus](https://web.dev/style-focus/) for details and more examples.
 
 ## Options
 
@@ -109,10 +137,11 @@ setting on their device to minimize the amount of non-essential motion. Learn mo
 
 Whether to focus elements with an `autofocus` attribute after navigation.
 
-Make sure to use this wisely. Automatically focussing elements can be useful to draw attention to
-inputs, but it comes with a list of drawbacks on its own, especially for screen-reading technology.
-See [Autofocus accessibility considerations](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)
-for details.
+> [!CAUTION]
+> Make sure to use this wisely. Automatically focussing elements can be useful to draw attention to
+> inputs, but it comes with a list of drawbacks on its own, especially for screen-reading technology.
+> See [Autofocus accessibility considerations](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)
+> for details.
 
 ### announcements
 
@@ -164,13 +193,6 @@ exactly. Use an asterisk `*` to declare fallback translations.
   }
 }
 ```
-
-#### Deprecated options
-
-The following two options are now grouped in the `announcements` object and deprecated.
-
-- `announcementTemplate`: equivalent to `announcements.visit`
-- `urlTemplate`: equivalent to `announcements.url`
 
 ## Visit object
 
