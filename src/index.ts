@@ -61,7 +61,7 @@ export default class SwupA11yPlugin extends Plugin {
 
 	defaults: Options = {
 		headingSelector: 'h1',
-		respectReducedMotion: false,
+		respectReducedMotion: true,
 		autofocus: false,
 		announcements: {
 			visit: 'Navigated to: {title}',
