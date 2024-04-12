@@ -194,13 +194,6 @@ exactly. Use an asterisk `*` to declare fallback translations.
 }
 ```
 
-#### Deprecated options
-
-The following two options are now grouped in the `announcements` object and deprecated.
-
-- `announcementTemplate`: equivalent to `announcements.visit`
-- `urlTemplate`: equivalent to `announcements.url`
-
 ## Visit object
 
 The plugin extends the visit object with a new `a11y` key that can be used to customize the
