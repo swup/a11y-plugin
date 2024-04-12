@@ -37,30 +37,3 @@ export function focusElement(elementOrSelector: string | HTMLElement) {
 		el.removeAttribute('tabindex');
 	}
 }
-
-export function setFocusStartingPoint(element: HTMLElement) {
-	element.focus({ preventScroll: true });
-
-	// Exit here if the element was successfully focused
-	if (element.matches(':focus')) return;
-
-	// Not focussed? Probably not a link/button/input
-	// In this case, we insert a focussable child into the element, focus it, and remove it again
-	const focusElement = createInvisibleFocusElement();
-	element.prepend(focusElement);
-	focusElement.focus({ preventScroll: true });
-	focusElement.remove();
-}
-
-export function createInvisibleFocusElement() {
-	const element = document.createElement('div');
-	element.setAttribute('tabindex', '-1');
-	element.style.position = 'absolute';
-	element.style.width = '1px';
-	element.style.height = '1px';
-	element.style.overflow = 'hidden';
-	element.style.clip = 'rect(1px, 1px, 1px, 1px)';
-	element.style.clipPath = 'inset(50%)';
-	element.style.outline = 'none';
-	return element;
-}
