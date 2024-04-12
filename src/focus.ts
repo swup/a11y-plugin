@@ -8,7 +8,7 @@ export function focusElement(elementOrSelector: string | HTMLElement) {
 
 	if (!(el instanceof HTMLElement)) return;
 
-	// Set and restore tabindex to allow focusing non-focusable elements
+	// Apply a tabindex attribute to allow focusing non-focusable elements
 	const tabindex = el.getAttribute('tabindex');
 	el.setAttribute('tabindex', '-1');
 	el.focus({ preventScroll: true });
