@@ -4,7 +4,7 @@ import Plugin from '@swup/plugin';
 import 'focus-options-polyfill';
 
 import { Announcer, getPageAnnouncement } from './announcements.js';
-import { focusAutofocusElement, focusElement, setFocusStartingPoint } from './focus.js';
+import { focusAutofocusElement, focusElement } from './focus.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -171,8 +171,8 @@ export default class SwupA11yPlugin extends Plugin {
 
 	handleAnchorScroll: HookHandler<'scroll:anchor'> = (visit, { hash }) => {
 		const anchor = this.swup.getAnchorElement(hash);
-		if (anchor && anchor instanceof HTMLElement) {
-			setFocusStartingPoint(anchor);
+		if (anchor instanceof HTMLElement) {
+			focusElement(anchor);
 		}
 	};
 
