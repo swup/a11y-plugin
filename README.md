@@ -48,7 +48,7 @@ descriptive `h1` for each page heading. See the options below for customizing wh
 
 <!-- prettier-ignore -->
 ```html
-<body> <!-- will be focussed -->
+<body> <!-- will be focused -->
   <header>
     Logo
   </header>
@@ -90,7 +90,7 @@ When clicking anchor links on the same page, the plugin will focus the target of
 
 ## Styling
 
-Browsers will display a visible outline around elements focussed by this plugin. That's great for
+Browsers will display a visible outline around elements focused by this plugin. That's great for
 orientation of keyboard users, but tends to be annoying for mouse users. We can make both groups of
 users happy by using a combination of the `:focus` and `:focus-visible` pseudo-class to hide any
 focus outlines while the site is being used with a mouse:
