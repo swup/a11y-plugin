@@ -83,7 +83,7 @@ All options with their default values:
 ```javascript
 {
   headingSelector: 'h1',
-  respectReducedMotion: false,
+  respectReducedMotion: true,
   autofocus: false,
   announcements: {
     visit: 'Navigated to: {title}',
