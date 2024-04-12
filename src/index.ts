@@ -186,7 +186,7 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	disableScrollAnimations(visit: Visit) {
-		// @ts-ignore: animate property is not defined unless Scroll Plugin installed
+		// @ts-expect-error: animate property is not defined unless Scroll Plugin installed
 		visit.scroll.animate = visit.scroll.animate && this.shouldAnimate();
 	}
 
