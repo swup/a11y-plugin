@@ -34,6 +34,7 @@ export function focusElement(elementOrSelector: string | HTMLElement) {
 	if (tabindex !== null) {
 		el.setAttribute('tabindex', tabindex);
 	} else {
-		el.removeAttribute('tabindex');
+		// Removing the tabindex will reset screen reader position, so we'll keep it
+		// el.removeAttribute('tabindex');
 	}
 }
