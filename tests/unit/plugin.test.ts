@@ -9,17 +9,18 @@ import { Announcer } from '../../src/announcements.js';
 vitest.mock('../../src/announcements.js');
 vitest.mock('../../src/focus.js');
 
-const page = { page: { html: '', url: '/' } };
-
 describe('SwupA11yPlugin', () => {
 	let swup: Swup;
 	let plugin: SwupA11yPlugin;
 	let visit: Visit;
 
 	beforeEach(() => {
+		document.body.innerHTML = '<h1>Test</h1>';
+
 		swup = new Swup();
 		plugin = new SwupA11yPlugin();
 		swup.use(plugin);
+
 		// @ts-ignore - createVisit is marked internal
 		visit = swup.createVisit({ url: '/' });
 		visit.to.document = new window.DOMParser().parseFromString(
@@ -49,19 +50,6 @@ describe('SwupA11yPlugin', () => {
 					focus: 'body'
 				}
 			});
-		});
-	});
-
-	describe('announcements', () => {
-		it('creates an announcer instance', async () => {
-			expect(plugin.announcer).toBeInstanceOf(Announcer);
-		});
-
-		it('adds an announce method to swup', async () => {
-			expect(swup.announce).toBeInstanceOf(Function);
-			const announcerMock = vi.spyOn(plugin.announcer, 'announce');
-			await swup.announce!('Hello');
-			expect(announcerMock).toHaveBeenCalledWith('Hello');
 		});
 	});
 
@@ -104,11 +92,28 @@ describe('SwupA11yPlugin', () => {
 		focus.focusAutofocusElement = vitest.fn().mockImplementation(() => autofocusElementFound);
 		focus.focusElement = vitest.fn();
 
-		it('calls focusElement from visit:end hook', async () => {
+		it('focuses element from visit:end hook', async () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			await swup.hooks.call('visit:end', visit, undefined);
 
 			expect(focus.focusElement).toHaveBeenCalledWith(visit.a11y.focus);
+		});
+
+		it('triggers content:focus hook from visit:end hook', async () => {
+			let triggered = false;
+			await swup.hooks.call('visit:start', visit, undefined);
+			swup.hooks.on('content:focus', () => (triggered = true));
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(triggered).toBe(true);
+		});
+
+		it('focuses custom focus selector', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.focus = 'main';
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(focus.focusElement).toHaveBeenCalledWith('main');
 		});
 
 		it('ignores empty focus selector', async () => {
@@ -146,4 +151,65 @@ describe('SwupA11yPlugin', () => {
 		});
 	});
 
+	describe('announcements', async () => {
+		let announcerMock;
+		const announcements = await import('../../src/announcements.js');
+		announcements.getPageAnnouncement = vitest.fn().mockImplementation(() => 'Hello');
+
+		beforeEach(() => {
+			announcerMock = vi.spyOn(plugin.announcer, 'announce');
+		});
+
+		it('creates an announcer instance', async () => {
+			expect(plugin.announcer).toBeInstanceOf(Announcer);
+		});
+
+		it('adds an announce method to swup', async () => {
+			expect(swup.announce).toBeInstanceOf(Function);
+			await swup.announce!('Hello');
+			expect(announcerMock).toHaveBeenCalledWith('Hello');
+		});
+
+		it('announces content from visit:end hook', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(announcerMock).toHaveBeenCalledWith(visit.a11y.announce, plugin.announcementDelay);
+		});
+
+		it('triggers content:announce hook from visit:end hook', async () => {
+			let triggered = false;
+			await swup.hooks.call('visit:start', visit, undefined);
+			swup.hooks.on('content:announce', () => (triggered = true));
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(triggered).toBe(true);
+		});
+
+		it('fills announcement with current page title', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(announcements.getPageAnnouncement).toHaveBeenCalledWith({
+				headingSelector: plugin.options.headingSelector,
+				announcements: plugin.options.announcements
+			});
+		});
+
+		it('announces custom announcement string', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.announce = 'Custom Message';
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(announcerMock).toHaveBeenCalledWith('Custom Message', plugin.announcementDelay);
+		});
+
+		it('ignores empty announcement string', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.announce = '';
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(announcerMock).not.toHaveBeenCalled();
+		});
+	});
 });
