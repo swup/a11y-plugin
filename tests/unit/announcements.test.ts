@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Announcer, getPageAnnouncement } from '../../src/announcements.js';
 
 describe('announcer', () => {
@@ -59,6 +59,72 @@ describe('announcer', () => {
 			expect(region.textContent).toBe('Hello.');
 			await announcer.announce('Hello');
 			expect(region.textContent).toBe('Hello');
+		});
+	});
+});
+
+describe('getPageAnnouncement', () => {
+	const announcements = {
+		visit: 'Loaded {title}',
+		url: 'page at {url}'
+	};
+
+	const multiLangAnnouncements = {
+		en: {
+			visit: 'Loaded {title}',
+			url: 'page at {url}'
+		},
+		de: {
+			visit: '{title} geladen',
+			url: 'Seite unter {url}'
+		},
+		'*': {
+			visit: '{title}',
+			url: '{url}'
+		}
+	};
+
+	const defaults = { headingSelector: 'h1', announcements };
+
+	describe('headings', () => {
+		it('gets heading title', () => {
+			document.body.innerHTML = '<h1>Title</h1>';
+			const announcement = getPageAnnouncement(defaults);
+			expect(announcement).toBe('Loaded Title');
+		});
+
+		it('prefers heading label', () => {
+			document.body.innerHTML = '<h1 aria-label="Label">Title</h1>';
+			const announcement = getPageAnnouncement(defaults);
+			expect(announcement).toBe('Loaded Label');
+		});
+
+		it('uses heading selector', () => {
+			document.body.innerHTML = '<h2>Section</h2><h1>Title</h1>';
+			const announcement = getPageAnnouncement(defaults);
+			expect(announcement).toBe('Loaded Title');
+		});
+
+		it('makes heading selector configurable', () => {
+			document.body.innerHTML = '<h1>Title</h1><h2>Section</h2>';
+			const announcement = getPageAnnouncement({ ...defaults, headingSelector: 'h2' });
+			expect(announcement).toBe('Loaded Section');
+		});
+	});
+
+	describe('fallbacks', () => {
+		it('uses document title if no heading is found', () => {
+			document.title = 'Document';
+			document.body.innerHTML = '';
+			const announcement = getPageAnnouncement(defaults);
+			expect(announcement).toBe('Loaded Document');
+		});
+
+		it('uses url if no title is found', () => {
+			document.body.innerHTML = '';
+			document.title = '';
+			const announcement = getPageAnnouncement(defaults);
+			expect(announcement).toBe('Loaded page at /');
 		});
 	});
 });
