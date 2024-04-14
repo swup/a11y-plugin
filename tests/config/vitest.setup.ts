@@ -1,17 +1,10 @@
 import { afterEach, vi } from 'vitest';
+import { matchMedia, cleanupMedia } from 'mock-match-media';
 
-/**
- * Allow spying on the console
- */
-// vi.spyOn(console, 'log');
-// vi.spyOn(console, 'warn');
-// vi.spyOn(console, 'error');
-
-// Stub browser functions for vitest
-// console.log = vi.fn();
-// console.warn = vi.fn();
-// console.error = vi.fn();
+window.matchMedia = matchMedia;
 
 afterEach(() => {
-  document.body.innerHTML = '';
+	document.body.innerHTML = '';
+	vi.clearAllMocks();
+	cleanupMedia();
 });
