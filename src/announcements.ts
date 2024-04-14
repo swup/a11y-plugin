@@ -43,8 +43,8 @@ export class Announcer {
 type PageAnnouncementOptions = Pick<Options, 'headingSelector' | 'announcements'>;
 
 export function getPageAnnouncement({
-	headingSelector,
-	announcements
+	headingSelector = 'h1',
+	announcements = {}
 }: PageAnnouncementOptions): string | undefined {
 	const lang = document.documentElement.lang || '*';
 	const { href, url, pathname: path } = Location.fromUrl(window.location.href);
