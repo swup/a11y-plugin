@@ -122,8 +122,8 @@ export default class SwupA11yPlugin extends Plugin {
 		this.swup.announce = undefined;
 	}
 
-	announce(message: string): void {
-		this.announcer.announce(message);
+	async announce(message: string): Promise<void> {
+		await this.announcer.announce(message);
 	}
 
 	markAsBusy() {
