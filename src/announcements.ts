@@ -23,16 +23,20 @@ export class Announcer {
 		return liveRegion;
 	}
 
-	announce(message: string, delay: number = 0) {
-		setTimeout(() => {
-			// // Fix screen readers not announcing the same message twice
-			if (this.region.textContent === message) {
-				message = `${message}.`;
-			}
-			// Clear before announcing
-			this.region.textContent = '';
-			this.region.textContent = message;
-		}, delay);
+	announce(message: string, delay: number = 0): Promise<void> {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				// // Fix screen readers not announcing the same message twice
+				if (this.region.textContent === message) {
+					message = `${message}.`;
+				}
+				// Clear before announcing
+				this.region.textContent = '';
+				this.region.textContent = message;
+
+				resolve();
+			}, delay);
+		});
 	}
 }
 
