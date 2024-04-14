@@ -38,7 +38,7 @@ describe('announcer', () => {
 	});
 
 	describe('announce', () => {
-		it('returns a promise',  () => {
+		it('returns a promise', () => {
 			const announcer = new Announcer();
 			expect(announcer.announce('Hello')).toBeInstanceOf(Promise);
 		});
@@ -70,11 +70,11 @@ describe('getPageAnnouncement', () => {
 	};
 
 	const multiLangAnnouncements = {
-		en: {
+		'en': {
 			visit: 'Loaded {title}',
 			url: 'page at {url}'
 		},
-		de: {
+		'de': {
 			visit: '{title} geladen',
 			url: 'Seite unter {url}'
 		},
