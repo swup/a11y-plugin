@@ -71,8 +71,20 @@ export default class SwupA11yPlugin extends Plugin {
 
 	options: Options;
 
+	/**
+	 * The announcer instance for reading new page content.
+	 */
 	announcer: Announcer;
 
+	/**
+	 * The delay before announcing new page content.
+	 * Why 100ms? see research at https://github.com/swup/a11y-plugin/pull/50
+	 */
+	announcementDelay: number = 100;
+
+	/**
+	 * The selector for the main content area of the page, to focus after navigation.
+	 */
 	rootSelector: string = 'body';
 
 	constructor(options: Partial<Options> = {}) {
@@ -145,17 +157,14 @@ export default class SwupA11yPlugin extends Plugin {
 				visit.a11y.announce = this.getPageAnnouncement();
 			}
 
-			// Announcement disabled for this visit?
 			if (!visit.a11y.announce) return;
 
-			// Why the 100ms delay? see research at https://github.com/swup/a11y-plugin/pull/50
-			this.announcer.announce(visit.a11y.announce, 100);
+			this.announcer.announce(visit.a11y.announce, this.announcementDelay);
 		});
 	}
 
 	focusContent(visit: Visit) {
 		this.swup.hooks.callSync('content:focus', visit, undefined, (visit) => {
-			// Focus disabled for this visit?
 			if (!visit.a11y.focus) return;
 
 			// Found and focused [autofocus] element? Return early
