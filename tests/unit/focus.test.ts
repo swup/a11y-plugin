@@ -38,4 +38,26 @@ describe('focus', () => {
 			expect(element.tabIndex).toBe(4);
 		});
 	});
+
+	describe('getAutofocusElement', () => {
+		it('finds the first autofocus element', () => {
+			const [first] = create('<button autofocus></button><input autofocus>');
+			expect(getAutofocusElement()).toBe(first);
+		});
+
+		it('ignores elements in inert containers', () => {
+			create('<div inert><button autofocus></button></div>');
+			expect(getAutofocusElement()).toBeUndefined();
+		});
+
+		it('ignores elements in aria-disabled containers', () => {
+			create('<div aria-disabled><button autofocus></button></div>');
+			expect(getAutofocusElement()).toBeUndefined();
+		});
+
+		it('ignores elements in aria-hidden containers', () => {
+			create('<div aria-hidden="true"><button autofocus></button></div>');
+			expect(getAutofocusElement()).toBeUndefined();
+		});
+	});
 });
