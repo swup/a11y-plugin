@@ -131,7 +131,9 @@ describe('getPageAnnouncement', () => {
 			const warnMock = vi.spyOn(console, 'warn');
 			document.body.innerHTML = '';
 			getPageAnnouncement(defaults);
-			expect(warnMock).toHaveBeenCalledWith(expect.stringContaining('No main heading (h1) found on new page'));
+			expect(warnMock).toHaveBeenCalledWith(
+				expect.stringContaining('No main heading (h1) found on new page')
+			);
 		});
 	});
 

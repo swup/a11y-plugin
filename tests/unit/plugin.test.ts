@@ -174,7 +174,10 @@ describe('SwupA11yPlugin', () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			await swup.hooks.call('visit:end', visit, undefined);
 
-			expect(announcerMock).toHaveBeenCalledWith(visit.a11y.announce, plugin.announcementDelay);
+			expect(announcerMock).toHaveBeenCalledWith(
+				visit.a11y.announce,
+				plugin.announcementDelay
+			);
 		});
 
 		it('triggers content:announce hook from visit:end hook', async () => {
