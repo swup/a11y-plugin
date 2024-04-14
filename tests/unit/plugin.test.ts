@@ -86,7 +86,7 @@ describe('SwupA11yPlugin', () => {
 		});
 	});
 
-	describe('focus', async () => {
+	describe('content focus', async () => {
 		let autofocusElementFound = false;
 		const focus = await import('../../src/focus.js');
 		focus.focusAutofocusElement = vitest.fn().mockImplementation(() => autofocusElementFound);
@@ -210,6 +210,18 @@ describe('SwupA11yPlugin', () => {
 			await swup.hooks.call('visit:end', visit, undefined);
 
 			expect(announcerMock).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('anchor focus', async () => {
+		const focus = await import('../../src/focus.js');
+		focus.focusElement = vitest.fn();
+
+		it('focuses anchor target from scroll:anchor hook', async () => {
+			document.body.innerHTML = '<a href="#target"></a><div id="target"></div>';
+			await swup.hooks.call('scroll:anchor', visit, { hash: '#target', options: {} });
+
+			expect(focus.focusElement).toHaveBeenCalledWith(expect.any(HTMLDivElement));
 		});
 	});
 });
