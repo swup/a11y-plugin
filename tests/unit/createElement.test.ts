@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createElement } from '../../src/util.js';
 
 describe('createElement', () => {
-	it('should create an element from an html string', () => {
+	it('creates an element from an html string', () => {
 			const html = '<div id="test" class="my-class">Hello World</div>';
 			const element = createElement(html);
 			expect(element).not.toBeNull();
@@ -12,7 +12,7 @@ describe('createElement', () => {
 			expect(element.textContent).toBe('Hello World');
 	});
 
-	it('should create nothing if no html is passed', () => {
+	it('creates nothing if no html is passed', () => {
 			const element = createElement('');
 			expect(element).toBeUndefined();
 	});
