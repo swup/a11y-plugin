@@ -40,7 +40,7 @@ export class Announcer {
 	}
 }
 
-type PageAnnouncementOptions = Pick<Options, 'headingSelector' | 'announcements'>;
+export type PageAnnouncementOptions = Pick<Options, 'headingSelector' | 'announcements'>;
 
 export function getPageAnnouncement({
 	headingSelector = 'h1',

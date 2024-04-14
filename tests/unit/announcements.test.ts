@@ -1,5 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { Announcer, getPageAnnouncement } from '../../src/announcements.js';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+	Announcer,
+	PageAnnouncementOptions,
+	getPageAnnouncement
+} from '../../src/announcements.js';
 
 describe('announcer', () => {
 	afterEach(() => {
@@ -84,7 +88,7 @@ describe('getPageAnnouncement', () => {
 		}
 	};
 
-	const defaults = { headingSelector: 'h1', announcements };
+	const defaults: PageAnnouncementOptions = { headingSelector: 'h1', announcements };
 
 	describe('headings', () => {
 		it('gets heading title', () => {
@@ -125,6 +129,34 @@ describe('getPageAnnouncement', () => {
 			document.title = '';
 			const announcement = getPageAnnouncement(defaults);
 			expect(announcement).toBe('Loaded page at /');
+		});
+	});
+
+	describe('multi-language', () => {
+		const multiLangDefaults: PageAnnouncementOptions = {
+			headingSelector: 'h1',
+			announcements: multiLangAnnouncements
+		};
+
+		it('uses the current language for announcements', () => {
+			document.documentElement.lang = 'de';
+			document.body.innerHTML = '<h1>Page</h1>';
+			const announcement = getPageAnnouncement(multiLangDefaults);
+			expect(announcement).toBe('Page geladen');
+		});
+
+		it('falls back to default language', () => {
+			document.documentElement.lang = 'it';
+			document.body.innerHTML = '<h1>Page</h1>';
+			const announcement = getPageAnnouncement(multiLangDefaults);
+			expect(announcement).toBe('Page');
+		});
+
+		it('matches the language strictly', () => {
+			document.documentElement.lang = 'de-DE';
+			document.body.innerHTML = '<h1>Page</h1>';
+			const announcement = getPageAnnouncement(multiLangDefaults);
+			expect(announcement).toBe('Page');
 		});
 	});
 });
