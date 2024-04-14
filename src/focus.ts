@@ -34,7 +34,7 @@ export function focusAutofocusElement(): boolean {
 
 export function getAutofocusElement(): HTMLElement | undefined {
 	const focusEl = document.querySelector<HTMLElement>('body [autofocus]');
-	if (focusEl && !focusEl.closest('inert, [aria-disabled], [aria-hidden="true"]')) {
+	if (focusEl && !focusEl.closest('[inert], [aria-disabled], [aria-hidden="true"]')) {
 		return focusEl;
 	}
 }
