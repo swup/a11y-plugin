@@ -49,7 +49,10 @@ export function getPageAnnouncement({
 	const lang = document.documentElement.lang || '*';
 	const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 
-	const templates = (announcements as AnnouncementTranslations)[lang] || announcements;
+	const templates =
+		(announcements as AnnouncementTranslations)[lang] ??
+		(announcements as AnnouncementTranslations)['*'] ??
+		announcements;
 	if (typeof templates !== 'object') return;
 
 	// Look for first heading on page
