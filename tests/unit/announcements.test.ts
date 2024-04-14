@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
 	Announcer,
 	PageAnnouncementOptions,
@@ -125,6 +125,13 @@ describe('getPageAnnouncement', () => {
 			document.title = '';
 			const announcement = getPageAnnouncement(defaults);
 			expect(announcement).toBe('Loaded page at /');
+		});
+
+		it('warns about missing heading', () => {
+			const warnMock = vi.spyOn(console, 'warn');
+			document.body.innerHTML = '';
+			getPageAnnouncement(defaults);
+			expect(warnMock).toHaveBeenCalledWith(expect.stringContaining('No main heading (h1) found on new page'));
 		});
 	});
 
