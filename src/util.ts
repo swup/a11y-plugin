@@ -1,7 +1,7 @@
-export function createElement(html: string): Element {
+export function createElement(html: string): HTMLElement {
 	const template = document.createElement('template');
 	template.innerHTML = html;
-	return template.content.children[0];
+	return template.content.children[0] as HTMLElement;
 }
 
 export function parseTemplate(str: string, replacements: Record<string, string>): string {

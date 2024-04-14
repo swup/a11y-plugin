@@ -5,7 +5,7 @@ import { createElement, parseTemplate } from './util.js';
 export class Announcer {
 	id: string = 'swup-announcer';
 	style: string = `position:absolute;top:0;left:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;word-wrap:normal;width:1px;height:1px;`;
-	region: Element;
+	region: HTMLElement;
 
 	constructor() {
 		this.region = this.getRegion() ?? this.createRegion();
@@ -15,7 +15,7 @@ export class Announcer {
 		return document.getElementById(this.id);
 	}
 
-	createRegion(): Element {
+	createRegion(): HTMLElement {
 		const liveRegion = createElement(
 			`<p aria-live="assertive" aria-atomic="true" id="${this.id}" style="${this.style}"></p>`
 		);
