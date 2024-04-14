@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { focusElement, getAutofocusElement } from '../../src/focus.js';
+import { describe, expect, it, vi } from 'vitest';
+import { focusAutofocusElement, focusElement, getAutofocusElement } from '../../src/focus.js';
 
 function create(html: string): HTMLElement[] {
 	document.body.innerHTML = html;
@@ -12,6 +12,13 @@ describe('focus', () => {
 			const [element] = create('<button></button>');
 			focusElement(element);
 			expect(document.activeElement).toBe(element);
+		});
+
+		it('prevents scroll on focus', () => {
+			const [element] = create('<button></button>');
+			const focusMock = vi.spyOn(element, 'focus');
+			focusElement(element);
+			expect(focusMock).toHaveBeenCalledWith({ preventScroll: true });
 		});
 
 		it('accepts an element selector', () => {
@@ -58,6 +65,15 @@ describe('focus', () => {
 		it('ignores elements in aria-hidden containers', () => {
 			create('<div aria-hidden="true"><button autofocus></button></div>');
 			expect(getAutofocusElement()).toBeUndefined();
+		});
+	});
+
+	describe('focusAutofocusElement', () => {
+		it('focuses the autofocus element', () => {
+			const [element] = create('<button autofocus></button>');
+			const focusMock = vi.spyOn(element, 'focus');
+			focusAutofocusElement();
+			expect(focusMock).toHaveBeenCalledWith();
 		});
 	});
 });
