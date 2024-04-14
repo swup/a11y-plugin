@@ -1,18 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { focusElement } from '../../src/focus.js';
+import { focusElement, getAutofocusElement } from '../../src/focus.js';
+
+function create(html: string): HTMLElement[] {
+	document.body.innerHTML = html;
+	return Array.from(document.body.children) as HTMLElement[];
+}
 
 describe('focus', () => {
 	describe('focusElement', () => {
 		it('focuses an element', () => {
-			const element = document.createElement('button');
-			document.body.appendChild(element);
+			const [element] = create('<button></button>');
 			focusElement(element);
 			expect(document.activeElement).toBe(element);
 		});
 
 		it('accepts an element selector', () => {
-			const element = document.createElement('button');
-			document.body.appendChild(element);
+			const [element] = create('<button></button>');
 			focusElement('button');
 			expect(document.activeElement).toBe(element);
 		});
@@ -24,16 +27,13 @@ describe('focus', () => {
 		});
 
 		it('sets a tab index', () => {
-			const element = document.createElement('button');
-			document.body.appendChild(element);
+			const [element] = create('<button></button>');
 			focusElement(element);
 			expect(element.tabIndex).toBe(-1);
 		});
 
 		it('restores the previous tabindex', () => {
-			const element = document.createElement('button');
-			element.tabIndex = 4;
-			document.body.appendChild(element);
+			const [element] = create('<button tabindex="4"></button>');
 			focusElement(element);
 			expect(element.tabIndex).toBe(4);
 		});
