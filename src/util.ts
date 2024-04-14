@@ -9,3 +9,7 @@ export function parseTemplate(str: string, replacements: Record<string, string>)
 		return str.replace(`{${key}}`, replacements[key] || '');
 	}, str || '');
 }
+
+export function prefersReducedMotion(): boolean {
+	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}

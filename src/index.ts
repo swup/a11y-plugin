@@ -5,6 +5,7 @@ import 'focus-options-polyfill';
 
 import { Announcer, getPageAnnouncement } from './announcements.js';
 import { focusAutofocusElement, focusElement } from './focus.js';
+import { prefersReducedMotion } from './util.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -188,14 +189,10 @@ export default class SwupA11yPlugin extends Plugin {
 	}
 
 	disableAnimations(visit: Visit) {
-		if (this.options.respectReducedMotion && !this.shouldAnimate()) {
+		if (this.options.respectReducedMotion && prefersReducedMotion()) {
 			visit.animation.animate = false;
 			// @ts-expect-error: animate is undefined unless Scroll Plugin installed
 			visit.scroll.animate = false;
 		}
-	}
-
-	shouldAnimate(): boolean {
-		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	}
 }
