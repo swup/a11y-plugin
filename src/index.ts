@@ -107,12 +107,9 @@ export default class SwupA11yPlugin extends Plugin {
 		this.on('scroll:anchor', this.handleAnchorScroll);
 
 		// Disable transition and scroll animations if user prefers reduced motion
-		if (this.options.respectReducedMotion) {
-			this.before('visit:start', this.disableTransitionAnimations);
-			this.before('visit:start', this.disableScrollAnimations);
-			this.before('link:self', this.disableScrollAnimations);
-			this.before('link:anchor', this.disableScrollAnimations);
-		}
+		this.before('visit:start', this.disableAnimations);
+		this.before('link:self', this.disableAnimations);
+		this.before('link:anchor', this.disableAnimations);
 
 		// Announce something programmatically
 		this.swup.announce = this.announce.bind(this);
@@ -181,13 +178,12 @@ export default class SwupA11yPlugin extends Plugin {
 		return getPageAnnouncement({ headingSelector, announcements });
 	}
 
-	disableTransitionAnimations(visit: Visit) {
-		visit.animation.animate = visit.animation.animate && this.shouldAnimate();
-	}
-
-	disableScrollAnimations(visit: Visit) {
-		// @ts-expect-error: animate property is not defined unless Scroll Plugin installed
-		visit.scroll.animate = visit.scroll.animate && this.shouldAnimate();
+	disableAnimations(visit: Visit) {
+		if (this.options.respectReducedMotion && !this.shouldAnimate()) {
+			visit.animation.animate = false;
+			// @ts-expect-error: animate is undefined unless Scroll Plugin installed
+			visit.scroll.animate = false;
+		}
 	}
 
 	shouldAnimate(): boolean {
