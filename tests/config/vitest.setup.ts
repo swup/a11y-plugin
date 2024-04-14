@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 
 /**
  * Allow spying on the console
@@ -11,3 +11,7 @@ import { vi } from 'vitest';
 // console.log = vi.fn();
 // console.warn = vi.fn();
 // console.error = vi.fn();
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});

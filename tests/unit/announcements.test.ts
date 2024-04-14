@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
 	Announcer,
 	PageAnnouncementOptions,
@@ -6,10 +6,6 @@ import {
 } from '../../src/announcements.js';
 
 describe('announcer', () => {
-	afterEach(() => {
-		document.body.innerHTML = '';
-	});
-
 	describe('live region', () => {
 		it('creates an empty live region', () => {
 			const announcer = new Announcer();
