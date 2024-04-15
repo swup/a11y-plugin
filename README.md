@@ -167,7 +167,8 @@ For multi-language sites, pass in a nested object keyed by locale. The locale mu
 `html` element's [lang](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang) attribute
 exactly. Use an asterisk `*` to declare fallback translations.
 
-> **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
+> [!NOTE]
+> Swup will not update the lang attribute on its own. For that, you can either install the
 > [Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
 > it yourself in the `content:replace` hook.
 
