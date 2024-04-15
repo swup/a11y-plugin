@@ -8,8 +8,8 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 
 - Rethink announcements: use assertive live region and announce after a delay (@ScoobyDid)
 - Focus `body` on navigation instead of `main`
-- Only use `h1` for announcements, ignore `h2`
-- Disable animations if users prefer reduced motion
+- Only use `h1` for announcements by default, ignore `h2`
+- Disable animations by default if users prefer reduced motion
 - Correctly exclude `inert` elements from autofocus
 - Tested in VoiceOver, JAWS and NVDA
 
