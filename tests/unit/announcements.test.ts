@@ -49,7 +49,7 @@ describe('announcer', () => {
 			expect(announcer.region.textContent).toBe('Hello');
 		});
 
-		it('modifies the announcement to allow duplicate messages', async () => {
+		it('modifies each announcement to make it unique', async () => {
 			const announcer = new Announcer();
 			const region = announcer.region;
 

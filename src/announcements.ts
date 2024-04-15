@@ -26,7 +26,7 @@ export class Announcer {
 	announce(message: string, delay: number = 0): Promise<void> {
 		return new Promise((resolve) => {
 			setTimeout(() => {
-				// // Fix screen readers not announcing the same message twice
+				// Make each message unique to allow reading identical page titles twice in a row
 				if (this.region.textContent === message) {
 					message = `${message}.`;
 				}
