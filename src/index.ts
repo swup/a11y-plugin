@@ -155,7 +155,9 @@ export default class SwupA11yPlugin extends Plugin {
 		const lang = document.documentElement.lang || '*';
 
 		const templates: Announcements =
-			(announcements as AnnouncementTranslations)[lang] || announcements;
+			(announcements as AnnouncementTranslations)[lang] ||
+			(announcements as AnnouncementTranslations)['*'] ||
+			announcements;
 		if (typeof templates !== 'object') return;
 
 		// Look for first heading in content container
