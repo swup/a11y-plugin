@@ -28,7 +28,7 @@ import SwupA11yPlugin from '@swup/a11y-plugin';
 Or include the minified production file from a CDN:
 
 ```html
-<script src="https://unpkg.com/@swup/a11y-plugin@4"></script>
+<script src="https://unpkg.com/@swup/a11y-plugin@5"></script>
 ```
 
 ## Usage
