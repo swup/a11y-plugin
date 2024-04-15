@@ -5,6 +5,7 @@ import 'focus-options-polyfill';
 
 import { Announcer, getPageAnnouncement } from './announcements.js';
 import { focusAutofocusElement, focusElement } from './focus.js';
+import { prefersReducedMotion } from './util.js';
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -71,8 +72,20 @@ export default class SwupA11yPlugin extends Plugin {
 
 	options: Options;
 
+	/**
+	 * The announcer instance for reading new page content.
+	 */
 	announcer: Announcer;
 
+	/**
+	 * The delay before announcing new page content.
+	 * Why 100ms? see research at https://github.com/swup/a11y-plugin/pull/50
+	 */
+	announcementDelay: number = 100;
+
+	/**
+	 * The selector for the main content area of the page, to focus after navigation.
+	 */
 	rootSelector: string = 'body';
 
 	constructor(options: Partial<Options> = {}) {
@@ -107,12 +120,9 @@ export default class SwupA11yPlugin extends Plugin {
 		this.on('scroll:anchor', this.handleAnchorScroll);
 
 		// Disable transition and scroll animations if user prefers reduced motion
-		if (this.options.respectReducedMotion) {
-			this.before('visit:start', this.disableTransitionAnimations);
-			this.before('visit:start', this.disableScrollAnimations);
-			this.before('link:self', this.disableScrollAnimations);
-			this.before('link:anchor', this.disableScrollAnimations);
-		}
+		this.before('visit:start', this.disableAnimations);
+		this.before('link:self', this.disableAnimations);
+		this.before('link:anchor', this.disableAnimations);
 
 		// Announce something programmatically
 		this.swup.announce = this.announce.bind(this);
@@ -122,8 +132,8 @@ export default class SwupA11yPlugin extends Plugin {
 		this.swup.announce = undefined;
 	}
 
-	announce(message: string): void {
-		this.announcer.announce(message);
+	async announce(message: string): Promise<void> {
+		await this.announcer.announce(message);
 	}
 
 	markAsBusy() {
@@ -148,17 +158,14 @@ export default class SwupA11yPlugin extends Plugin {
 				visit.a11y.announce = this.getPageAnnouncement();
 			}
 
-			// Announcement disabled for this visit?
 			if (!visit.a11y.announce) return;
 
-			// Why the 100ms delay? see research at https://github.com/swup/a11y-plugin/pull/50
-			this.announcer.announce(visit.a11y.announce, 100);
+			this.announcer.announce(visit.a11y.announce, this.announcementDelay);
 		});
 	}
 
 	focusContent(visit: Visit) {
 		this.swup.hooks.callSync('content:focus', visit, undefined, (visit) => {
-			// Focus disabled for this visit?
 			if (!visit.a11y.focus) return;
 
 			// Found and focused [autofocus] element? Return early
@@ -181,16 +188,11 @@ export default class SwupA11yPlugin extends Plugin {
 		return getPageAnnouncement({ headingSelector, announcements });
 	}
 
-	disableTransitionAnimations(visit: Visit) {
-		visit.animation.animate = visit.animation.animate && this.shouldAnimate();
-	}
-
-	disableScrollAnimations(visit: Visit) {
-		// @ts-expect-error: animate property is not defined unless Scroll Plugin installed
-		visit.scroll.animate = visit.scroll.animate && this.shouldAnimate();
-	}
-
-	shouldAnimate(): boolean {
-		return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	disableAnimations(visit: Visit) {
+		if (this.options.respectReducedMotion && prefersReducedMotion()) {
+			visit.animation.animate = false;
+			// @ts-expect-error: animate is undefined unless Scroll Plugin installed
+			visit.scroll.animate = false;
+		}
 	}
 }

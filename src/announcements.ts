@@ -5,7 +5,7 @@ import { createElement, parseTemplate } from './util.js';
 export class Announcer {
 	id: string = 'swup-announcer';
 	style: string = `position:absolute;top:0;left:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;word-wrap:normal;width:1px;height:1px;`;
-	region: Element;
+	region: HTMLElement;
 
 	constructor() {
 		this.region = this.getRegion() ?? this.createRegion();
@@ -15,7 +15,7 @@ export class Announcer {
 		return document.getElementById(this.id);
 	}
 
-	createRegion(): Element {
+	createRegion(): HTMLElement {
 		const liveRegion = createElement(
 			`<p aria-live="assertive" aria-atomic="true" id="${this.id}" style="${this.style}"></p>`
 		);
@@ -23,29 +23,36 @@ export class Announcer {
 		return liveRegion;
 	}
 
-	announce(message: string, delay: number = 0) {
-		setTimeout(() => {
-			// // Fix screen readers not announcing the same message twice
-			if (this.region.textContent === message) {
-				message = `${message}.`;
-			}
-			// Clear before announcing
-			this.region.textContent = '';
-			this.region.textContent = message;
-		}, delay);
+	announce(message: string, delay: number = 0): Promise<void> {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				// Make each message unique to allow reading identical page titles twice in a row
+				if (this.region.textContent === message) {
+					message = `${message}.`;
+				}
+				// Clear before announcing
+				this.region.textContent = '';
+				this.region.textContent = message;
+
+				resolve();
+			}, delay);
+		});
 	}
 }
 
-type PageAnnouncementOptions = Pick<Options, 'headingSelector' | 'announcements'>;
+export type PageAnnouncementOptions = Pick<Options, 'headingSelector' | 'announcements'>;
 
 export function getPageAnnouncement({
-	headingSelector,
-	announcements
+	headingSelector = 'h1',
+	announcements = {}
 }: PageAnnouncementOptions): string | undefined {
 	const lang = document.documentElement.lang || '*';
 	const { href, url, pathname: path } = Location.fromUrl(window.location.href);
 
-	const templates = (announcements as AnnouncementTranslations)[lang] || announcements;
+	const templates =
+		(announcements as AnnouncementTranslations)[lang] ??
+		(announcements as AnnouncementTranslations)['*'] ??
+		announcements;
 	if (typeof templates !== 'object') return;
 
 	// Look for first heading on page
