@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.0.0] - 2024-04-15
+## [5.0.0] - 2024-04
 
 This is a complete overhaul of the plugin, based on extensive feedback and testing in screen
 readers. Some breaking changes have been made to improve the defaults. If you haven't customized the
@@ -12,6 +12,10 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 - Disable animations by default if users prefer reduced motion
 - Correctly exclude `inert` elements from autofocus
 - Tested in VoiceOver, JAWS and NVDA
+
+## [4.5.2] - 2024-04-15
+
+- Use fallback announcement for unknown languages
 
 ## [4.5.1] - 2024-04-02
 
@@ -68,6 +72,7 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 - Initial release
 
 [5.0.0]: https://github.com/swup/a11y-plugin/releases/tag/5.0.0
+[4.5.2]: https://github.com/swup/a11y-plugin/releases/tag/4.5.2
 [4.5.1]: https://github.com/swup/a11y-plugin/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/a11y-plugin/releases/tag/4.5.0
 [4.4.2]: https://github.com/swup/a11y-plugin/releases/tag/4.4.2
