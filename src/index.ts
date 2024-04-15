@@ -85,8 +85,8 @@ export default class SwupA11yPlugin extends Plugin {
 		// Merge deprecated announcement templates into new structure
 		options.announcements = {
 			...this.defaults.announcements,
-			visit: options.announcementTemplate ?? this.defaults.announcements.visit,
-			url: options.urlTemplate ?? this.defaults.announcements.url,
+			visit: options.announcementTemplate ?? String(this.defaults.announcements.visit),
+			url: options.urlTemplate ?? String(this.defaults.announcements.url),
 			...options.announcements
 		};
 
@@ -155,7 +155,9 @@ export default class SwupA11yPlugin extends Plugin {
 		const lang = document.documentElement.lang || '*';
 
 		const templates: Announcements =
-			(announcements as AnnouncementTranslations)[lang] || announcements;
+			(announcements as AnnouncementTranslations)[lang] ||
+			(announcements as AnnouncementTranslations)['*'] ||
+			announcements;
 		if (typeof templates !== 'object') return;
 
 		// Look for first heading in content container
