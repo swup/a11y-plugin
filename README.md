@@ -6,8 +6,12 @@ Loading new content via AJAX is a great experience for most users, but comes wit
 shortcomings for screen reader users. This plugin will improve that:
 
 - **Announce page visits** to screenreaders by reading the new page title
-- **Focus the main content area** after swapping out the content
+- **Restore focus** after swapping out the content
 - **Skip animations** for users with a preference for reduced motion
+
+Accessibility can be hard to get right. That's why we're keen to hear your feedback. Share your
+experience and suggest improvements by [opening an issue](https://github.com/swup/a11y-plugin/issues/new/choose)
+on this repo. Let's make swup better together!
 
 ## Installation
 
@@ -24,7 +28,7 @@ import SwupA11yPlugin from '@swup/a11y-plugin';
 Or include the minified production file from a CDN:
 
 ```html
-<script src="https://unpkg.com/@swup/a11y-plugin@4"></script>
+<script src="https://unpkg.com/@swup/a11y-plugin@5"></script>
 ```
 
 ## Usage
@@ -39,18 +43,20 @@ const swup = new Swup({
 
 ## Markup
 
-The plugin should work out of the box if you use proper semantic markup for your
-content, i.e. `main` for your content area and `h1` or `h2` for your headings.
-See the options below for customizing what elements to look for.
+The plugin should work out of the box if you use proper semantic markup for your content, i.e. a
+descriptive `h1` for each page heading. See the options below for customizing what tags to look for.
 
+<!-- prettier-ignore -->
 ```html
-<header>
-  Logo
-</header>
-<main> <!-- will be focussed -->
-  <h1>Page Title</h1> <!-- will be announced -->
-  <p>Lorem ipsum dolor sit amet</p>
-</main>
+<body> <!-- will be focused -->
+  <header>
+    Logo
+  </header>
+  <main>
+    <h1>Page Title</h1> <!-- will be announced -->
+    <p>Lorem ipsum dolor sit amet</p>
+  </main>
+</body>
 ```
 
 ## Announcements
@@ -58,31 +64,45 @@ See the options below for customizing what elements to look for.
 The plugin will announce the new page to screen readers after navigating to it. It will look for the
 following and announce the first one found:
 
-- Main heading label: `<h1 aria-label="About"></h1>`
-- Main heading content: `<h1>About</h1>`
+- Heading label: `<h1 aria-label="About"></h1>`
+- Heading content: `<h1>About</h1>`
 - Document title: `<title>About</title>`
 - Page URL: `/about/`
 
-The easiest way to announce a page title differing from the main heading is using `aria-label`:
+The easiest way to announce a page title differing from the main heading is using `aria-label`. The
+example below will be announced as `Homepage`.
 
 ```html
-<h1 aria-label="Homepage">Project Title</h1> <!-- will announce 'Homepage' -->
+<h1 aria-label="Homepage">Project Title</h1>
 ```
+
+## Focus
+
+On page navigation, the plugin will reset focus to the body, imitating default browser behavior.
+When clicking anchor links on the same page, the plugin will focus the target of the link.
+
+> [!TIP]
+> When linking to other sections on the page, make sure to target a single item that is descriptive
+> of the section, e.g. a heading or a button. Linking to a large container has multiple issues:
+> Some browsers will scroll to the center of the targeted container, disorienting near-sighted users
+> with increased zoom. Screen readers will also start reading out the content of the targeted
+> element, which can be overwhelming when a whole content section is being read out.
 
 ## Styling
 
-Browsers will display a visible outline around the main content area when it
-receives focus after navigation. Make sure to remove the outline in your CSS
-if that isn't the desired behavior.
-
-See these guides on [Controlling focus](https://web.dev/control-focus-with-tabindex/)
-and [Styling focus](https://web.dev/style-focus/) for details and more examples.
+Browsers will display a visible outline around elements focused by this plugin. That's great for
+orientation of keyboard users, but tends to be annoying for mouse users. We can make both groups of
+users happy by using a combination of the `:focus` and `:focus-visible` pseudo-class to hide any
+focus outlines while the site is being used with a mouse:
 
 ```css
-main:focus {
+:focus:not(:focus-visible) {
   outline: none;
 }
 ```
+
+See these guides on [Controlling focus](https://web.dev/control-focus-with-tabindex/)
+and [Styling focus](https://web.dev/style-focus/) for details and more examples.
 
 ## Options
 
@@ -90,9 +110,8 @@ All options with their default values:
 
 ```javascript
 {
-  contentSelector: 'main',
-  headingSelector: 'h1, h2, [role=heading]',
-  respectReducedMotion: false,
+  headingSelector: 'h1',
+  respectReducedMotion: true,
   autofocus: false,
   announcements: {
     visit: 'Navigated to: {title}',
@@ -101,17 +120,10 @@ All options with their default values:
 }
 ```
 
-### contentSelector
-
-The selector for matching the main content area of the page.
-
-This area will receive focus after a new page was loaded.
-
 ### headingSelector
 
-The selector for finding headings **inside the main content area**.
-
-The first heading's content will be read to screen readers after a new page was loaded.
+The selector for finding page headings. The content of the first found heading will be read to
+screenreaders after a new page was loaded.
 
 ### respectReducedMotion
 
@@ -125,10 +137,11 @@ setting on their device to minimize the amount of non-essential motion. Learn mo
 
 Whether to focus elements with an `autofocus` attribute after navigation.
 
-Make sure to use this wisely. Automatically focussing elements can be useful to draw attention to
-inputs, but it comes with a list of drawbacks on its own, especially for screen-reading technology.
-See [Autofocus accessibility considerations](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)
-for details.
+> [!CAUTION]
+> Make sure to use this wisely. Automatically focussing elements can be useful to draw attention to
+> inputs, but it comes with a list of drawbacks on its own, especially for screen-reading technology.
+> See [Autofocus accessibility considerations](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)
+> for details.
 
 ### announcements
 
@@ -154,9 +167,10 @@ For multi-language sites, pass in a nested object keyed by locale. The locale mu
 `html` element's [lang](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang) attribute
 exactly. Use an asterisk `*` to declare fallback translations.
 
-> **Note**: Swup will not update the lang attribute on its own. For that, you can either install the
-[Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
-it yourself in the `content:replace` hook.
+> [!NOTE]
+> Swup will not update the lang attribute on its own. For that, you can either install the
+> [Head Plugin](https://swup.js.org/plugins/head-plugin/) to do it automatically, or you can do update
+> it yourself in the `content:replace` hook.
 
 ```js
 {
@@ -181,13 +195,6 @@ it yourself in the `content:replace` hook.
 }
 ```
 
-#### Deprecated options
-
-The following two options are now grouped in the `announcements` object and deprecated.
-
-- `announcementTemplate`: equivalent to `announcements.visit`
-- `urlTemplate`: equivalent to `announcements.url`
-
 ## Visit object
 
 The plugin extends the visit object with a new `a11y` key that can be used to customize the
@@ -199,7 +206,7 @@ behavior on the fly.
   to: { ... },
   a11y: {
     announce: 'Navigated to: About',
-    focus: 'main'
+    focus: 'body'
   }
 }
 ```
@@ -221,9 +228,9 @@ swup.hooks.before('content:announce', (visit) => {
 
 ### visit.a11y.focus
 
-The element to receive focus after the new page was loaded. This is taken directly from the
-`contentSelector` option passed into the plugin, but can be customized per visit. Set it to a
-selector `string` to select an element, or set it to `false` to not move the focus on this visit.
+The element to receive focus after the new page was loaded, by default the `body`. Can be customized
+per visit. Set it to a selector `string` to select an element, or set it to `false` to not move the
+focus on this visit.
 
 ## Hooks
 
@@ -240,7 +247,7 @@ swup.hooks.on('content:announce', () => console.log('New content was announced')
 
 ### content:focus
 
-Executes the focussing of the new main content container.
+Executes the focussing of the new page.
 
 ```js
 swup.hooks.on('content:focus', () => console.log('New content received focus'));
@@ -252,7 +259,9 @@ The plugin adds the following method to the swup instance:
 
 ### announce
 
-Announce something programmatically. Use this if you are making use of [`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want state changes to be announced.
+Announce something programmatically. Use this if you are making use of
+[`options.resolveUrl`](https://swup.js.org/options/#resolve-url) and still want
+state changes to be announced.
 
 ```js
 swup.announce?.(`Filtered by ${myFilterString}`);
