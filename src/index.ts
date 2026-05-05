@@ -61,7 +61,7 @@ export default class SwupA11yPlugin extends Plugin {
 	requires = { swup: '>=4' };
 
 	defaults: Options = {
-		headingSelector: 'h1',
+		headingSelector: ['main h1', 'h1'],
 		respectReducedMotion: true,
 		autofocus: false,
 		announcements: {
