@@ -56,9 +56,15 @@ export function getPageAnnouncement({
 	if (typeof templates !== 'object') return;
 
 	// Look for first heading on page
-	const headingEl = document.querySelector(headingSelector);
+	const selectors = Array.isArray(headingSelector) ? headingSelector : [headingSelector];
+	const headingEl = selectors.reduce(
+		(found, selector) => found ?? document.querySelector(selector),
+		null as Element | null
+	);
 	if (!headingEl) {
-		console.warn(`SwupA11yPlugin: No main heading (${headingSelector}) found on new page`);
+		console.warn(
+			`SwupA11yPlugin: No main heading (${selectors.join(' / ')}) found on new page`
+		);
 	}
 
 	// Get page heading from aria attribute or text content
