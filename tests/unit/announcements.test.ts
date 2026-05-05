@@ -110,6 +110,15 @@ describe('getPageAnnouncement', () => {
 			const announcement = getPageAnnouncement({ ...defaults, headingSelector: 'h2' });
 			expect(announcement).toBe('Loaded Section');
 		});
+
+		it('tries different selectors in order', () => {
+			document.body.innerHTML = '<h1>Logo</h1><main><h1>Title</h1></main>';
+			const announcement = getPageAnnouncement({
+				...defaults,
+				headingSelector: ['main h1', 'h1']
+			});
+			expect(announcement).toBe('Loaded Title');
+		});
 	});
 
 	describe('fallbacks', () => {
