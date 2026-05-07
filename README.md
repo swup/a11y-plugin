@@ -110,7 +110,7 @@ All options with their default values:
 
 ```javascript
 {
-  headingSelector: 'h1',
+  headingSelector: ['main h1', 'h1'],
   respectReducedMotion: true,
   autofocus: false,
   announcements: {
@@ -123,7 +123,8 @@ All options with their default values:
 ### headingSelector
 
 The selector for finding page headings. The content of the first found heading will be read to
-screenreaders after a new page was loaded.
+screenreaders after a new page was loaded. The default selector uses an array to prioritize
+headings inside the `main` element.
 
 ### respectReducedMotion
 

@@ -45,8 +45,8 @@ export type AnnouncementTranslations = {
 };
 
 export type Options = {
-	/** The selector for finding headings inside the main content area. */
-	headingSelector: string;
+	/** The selector for finding headings inside the main content area. Use an array to try different selectors in order. */
+	headingSelector: string | string[];
 	/** Whether to skip animations for users that prefer reduced motion. */
 	respectReducedMotion: boolean;
 	/** How to announce the new page title and url. */
@@ -61,7 +61,7 @@ export default class SwupA11yPlugin extends Plugin {
 	requires = { swup: '>=4' };
 
 	defaults: Options = {
-		headingSelector: 'h1',
+		headingSelector: ['main h1', 'h1'],
 		respectReducedMotion: true,
 		autofocus: false,
 		announcements: {
