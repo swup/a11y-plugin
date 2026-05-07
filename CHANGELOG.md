@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.1.0] - 2026-05-07
+
+- Prioritize `h1` inside `main` for announcements
+- Allow multiple heading selectors to be tried in order
+
 ## [5.0.0] - 2024-04
 
 This is a complete overhaul of the plugin, based on extensive feedback and testing in screen
@@ -71,6 +76,7 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 
 - Initial release
 
+[5.1.0]: https://github.com/swup/a11y-plugin/releases/tag/5.1.0
 [5.0.0]: https://github.com/swup/a11y-plugin/releases/tag/5.0.0
 [4.5.2]: https://github.com/swup/a11y-plugin/releases/tag/4.5.2
 [4.5.1]: https://github.com/swup/a11y-plugin/releases/tag/4.5.1
