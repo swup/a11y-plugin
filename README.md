@@ -235,7 +235,7 @@ swup.hooks.before('content:announce', (visit) => {
 
 Type: `Object` | `string` | `false`, Default: `Object`
 
-Controls what element to focus after the new page has loaded, and when. Defaults moving the focus to the `<body>` on `visit:end`. Customize like so:
+Customize which element to focus after the new page has loaded, and when. Defaults moving the focus to the `<body>` on `visit:end`:
 
 ```js
 swup.hooks.on('visit:start', (visit) => {
@@ -250,7 +250,7 @@ swup.hooks.on('visit:start', (visit) => {
 });
 ```
 
-Can be customized per visit. Set `wait` to false to apply focus immediately after `content:replace`. Change `selector` to focus another element. Or disable focus handling altogether by setting `visit.focus = false`.
+Set `visit.focus = false` to completely disable focus handling.
 
 ## Hooks
 
