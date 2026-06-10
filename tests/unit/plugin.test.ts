@@ -103,7 +103,7 @@ describe('SwupA11yPlugin', () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			visit.a11y.focus = {
 				selector: 'body',
-				wait: false,
+				wait: false
 			};
 			await swup.hooks.call('content:replace', visit, { page: { url: '/', html: '' } });
 

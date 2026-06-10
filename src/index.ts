@@ -12,7 +12,7 @@ type VisitFocus = {
 	selector: string;
 	/** wait until "visit:end" before focusing? Default: true */
 	wait: boolean;
-}
+};
 
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
@@ -161,7 +161,7 @@ export default class SwupA11yPlugin extends Plugin {
 			announce: undefined,
 			focus: {
 				selector: this.rootSelector,
-				wait: true,
+				wait: true
 			}
 		};
 	}
@@ -208,10 +208,13 @@ export default class SwupA11yPlugin extends Plugin {
 	parseVisitFocus(value: false | string | VisitFocus): false | VisitFocus {
 		if (!value) return false;
 
-		const focus = typeof value === 'string' ? {
-			selector: value,
-			wait: true,
-		} : value;
+		const focus =
+			typeof value === 'string'
+				? {
+						selector: value,
+						wait: true
+					}
+				: value;
 
 		return !focus.selector ? false : focus;
 	}

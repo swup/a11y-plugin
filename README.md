@@ -242,7 +242,7 @@ Controls what element to focus after the new page has loaded, and when. Defaults
 visit.focus = {
   selector: 'body',
   wait: true
-}
+};
 ```
 
 Can be customized per visit. Set `wait` to false to apply focus immediately after `content:replace`. Change `selector` to focus another element. Or disable focus handling altogether by setting `visit.focus = false`.
