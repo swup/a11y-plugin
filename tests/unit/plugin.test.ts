@@ -1,4 +1,4 @@
-import { vitest, describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { vitest, describe, expect, it, beforeEach, afterEach, vi, MockInstance } from 'vitest';
 import { setMedia } from 'mock-match-media';
 
 import Swup, { Visit } from 'swup';
@@ -152,7 +152,7 @@ describe('SwupA11yPlugin', () => {
 	});
 
 	describe('announcements', async () => {
-		let announcerMock;
+		let announcerMock: MockInstance;
 		const announcements = await import('../../src/announcements.js');
 		announcements.getPageAnnouncement = vitest.fn().mockImplementation(() => 'Hello');
 
