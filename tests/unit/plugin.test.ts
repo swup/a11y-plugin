@@ -92,9 +92,20 @@ describe('SwupA11yPlugin', () => {
 		focus.focusAutofocusElement = vitest.fn().mockImplementation(() => autofocusElementFound);
 		focus.focusElement = vitest.fn();
 
-		it('focuses element from visit:end hook', async () => {
+		it('applies focus on visit:end by default', async () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(focus.focusElement).toHaveBeenCalledWith('body');
+		});
+
+		it('applies focus on content:replace if configured', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.focus = {
+				selector: 'body',
+				wait: false,
+			};
+			await swup.hooks.call('content:replace', visit, { page: { url: '/', html: '' } });
 
 			expect(focus.focusElement).toHaveBeenCalledWith('body');
 		});
@@ -119,6 +130,14 @@ describe('SwupA11yPlugin', () => {
 		it('ignores empty focus selector', async () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			visit.a11y.focus = '';
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(focus.focusElement).not.toHaveBeenCalled();
+		});
+
+		it('ignores empty focus.selector selector', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.focus = { selector: '', wait: true };
 			await swup.hooks.call('visit:end', visit, undefined);
 
 			expect(focus.focusElement).not.toHaveBeenCalled();
