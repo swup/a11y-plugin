@@ -207,12 +207,17 @@ behavior on the fly.
   to: { ... },
   a11y: {
     announce: 'Navigated to: About',
-    focus: 'body'
+    focus: {
+      selector: 'body',
+      wait: true
+    }
   }
 }
 ```
 
 ### visit.a11y.announce
+
+Type: `string` | `false` | `undefined`
 
 The text to announce after the new page was loaded. This is the final text after choosing the
 correct language from the [announcements](#announcements) option and filling in any placeholders.
@@ -229,9 +234,18 @@ swup.hooks.before('content:announce', (visit) => {
 
 ### visit.a11y.focus
 
-The element to receive focus after the new page was loaded, by default the `body`. Can be customized
-per visit. Set it to a selector `string` to select an element, or set it to `false` to not move the
-focus on this visit.
+Type: `Object` | `string` | `false`, Default: `Object`
+
+Controls what element to focus after the new page has loaded, and when. Defaults to the `body` after the visit has settled:
+
+```js
+visit.focus = {
+  selector: 'body',
+  wait: true
+}
+```
+
+Can be customized per visit. Set `wait` to false to apply focus immediately after `content:replace`. Change `selector` to focus another element. Or disable focus handling altogether by setting `visit.focus = false`.
 
 ## Hooks
 

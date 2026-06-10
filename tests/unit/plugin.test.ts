@@ -47,7 +47,7 @@ describe('SwupA11yPlugin', () => {
 			expect(visit).toMatchObject({
 				a11y: {
 					announce: undefined,
-					focus: 'body'
+					focus: { selector: 'body', wait: true }
 				}
 			});
 		});
@@ -96,7 +96,7 @@ describe('SwupA11yPlugin', () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			await swup.hooks.call('visit:end', visit, undefined);
 
-			expect(focus.focusElement).toHaveBeenCalledWith(visit.a11y.focus);
+			expect(focus.focusElement).toHaveBeenCalledWith('body');
 		});
 
 		it('triggers content:focus hook from visit:end hook', async () => {
