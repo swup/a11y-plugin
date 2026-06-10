@@ -1,4 +1,4 @@
-import { vitest, describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { vitest, describe, expect, it, beforeEach, afterEach, vi, MockInstance } from 'vitest';
 import { setMedia } from 'mock-match-media';
 
 import Swup, { Visit } from 'swup';
@@ -47,7 +47,7 @@ describe('SwupA11yPlugin', () => {
 			expect(visit).toMatchObject({
 				a11y: {
 					announce: undefined,
-					focus: 'body'
+					focus: { selector: 'body', wait: true }
 				}
 			});
 		});
@@ -92,11 +92,22 @@ describe('SwupA11yPlugin', () => {
 		focus.focusAutofocusElement = vitest.fn().mockImplementation(() => autofocusElementFound);
 		focus.focusElement = vitest.fn();
 
-		it('focuses element from visit:end hook', async () => {
+		it('applies focus on visit:end by default', async () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			await swup.hooks.call('visit:end', visit, undefined);
 
-			expect(focus.focusElement).toHaveBeenCalledWith(visit.a11y.focus);
+			expect(focus.focusElement).toHaveBeenCalledWith('body');
+		});
+
+		it('applies focus on content:replace if configured', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.focus = {
+				selector: 'body',
+				wait: false
+			};
+			await swup.hooks.call('content:replace', visit, { page: { url: '/', html: '' } });
+
+			expect(focus.focusElement).toHaveBeenCalledWith('body');
 		});
 
 		it('triggers content:focus hook from visit:end hook', async () => {
@@ -119,6 +130,14 @@ describe('SwupA11yPlugin', () => {
 		it('ignores empty focus selector', async () => {
 			await swup.hooks.call('visit:start', visit, undefined);
 			visit.a11y.focus = '';
+			await swup.hooks.call('visit:end', visit, undefined);
+
+			expect(focus.focusElement).not.toHaveBeenCalled();
+		});
+
+		it('ignores empty focus.selector selector', async () => {
+			await swup.hooks.call('visit:start', visit, undefined);
+			visit.a11y.focus = { selector: '', wait: true };
 			await swup.hooks.call('visit:end', visit, undefined);
 
 			expect(focus.focusElement).not.toHaveBeenCalled();
@@ -152,7 +171,7 @@ describe('SwupA11yPlugin', () => {
 	});
 
 	describe('announcements', async () => {
-		let announcerMock;
+		let announcerMock: MockInstance;
 		const announcements = await import('../../src/announcements.js');
 		announcements.getPageAnnouncement = vitest.fn().mockImplementation(() => 'Hello');
 

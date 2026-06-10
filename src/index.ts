@@ -7,11 +7,22 @@ import { Announcer, getPageAnnouncement } from './announcements.js';
 import { focusAutofocusElement, focusElement } from './focus.js';
 import { prefersReducedMotion } from './util.js';
 
+type VisitFocus = {
+	/** the element selector to focus */
+	selector: string;
+	/** wait until "visit:end" before focusing? Default: true */
+	wait: boolean;
+};
+
 export interface VisitA11y {
 	/** How to announce the new content after it inserted */
 	announce: string | false | undefined;
-	/** The element to focus after the content is replaced */
-	focus: string | false;
+	/**
+	 * How to move focus after the content is replaced
+	 * - pass a string to focus an element
+	 * - pass an object for more control
+	 */
+	focus: string | false | VisitFocus;
 }
 
 declare module 'swup' {
@@ -110,8 +121,9 @@ export default class SwupA11yPlugin extends Plugin {
 		this.on('visit:start', this.markAsBusy);
 		this.on('visit:end', this.unmarkAsBusy);
 
-		// Focus new page content after visit completes
-		this.on('visit:end', this.focusContent);
+		// Focus new page content, based on `visit.a11y.focus`
+		this.on('content:replace', this.maybeFocusEarly);
+		this.on('visit:end', this.maybeFocusLate);
 
 		// Announce new page title after visit completes
 		this.on('visit:end', this.announceContent);
@@ -147,7 +159,10 @@ export default class SwupA11yPlugin extends Plugin {
 	prepareVisit(visit: Visit) {
 		visit.a11y = {
 			announce: undefined,
-			focus: this.rootSelector
+			focus: {
+				selector: this.rootSelector,
+				wait: true
+			}
 		};
 	}
 
@@ -164,16 +179,44 @@ export default class SwupA11yPlugin extends Plugin {
 		});
 	}
 
+	maybeFocusEarly(visit: Visit) {
+		const focus = this.parseVisitFocus(visit.a11y.focus);
+		if (focus && !focus.wait) this.focusContent(visit);
+	}
+
+	maybeFocusLate(visit: Visit) {
+		const focus = this.parseVisitFocus(visit.a11y.focus);
+		if (focus && focus.wait) this.focusContent(visit);
+	}
+
 	focusContent(visit: Visit) {
 		this.swup.hooks.callSync('content:focus', visit, undefined, (visit) => {
-			if (!visit.a11y.focus) return;
+			const focus = this.parseVisitFocus(visit.a11y.focus);
+			if (!focus) return;
 
 			// Found and focused [autofocus] element? Return early
 			if (this.options.autofocus && focusAutofocusElement() === true) return;
 
 			// Otherwise, find and focus actual content container
-			focusElement(visit.a11y.focus);
+			focusElement(focus.selector);
 		});
+	}
+
+	/**
+	 * parse `visit.focus`
+	 */
+	parseVisitFocus(value: false | string | VisitFocus): false | VisitFocus {
+		if (!value) return false;
+
+		const focus =
+			typeof value === 'string'
+				? {
+						selector: value,
+						wait: true
+					}
+				: value;
+
+		return !focus.selector ? false : focus;
 	}
 
 	handleAnchorScroll: HookHandler<'scroll:anchor'> = (visit, { hash }) => {

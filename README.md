@@ -207,19 +207,23 @@ behavior on the fly.
   to: { ... },
   a11y: {
     announce: 'Navigated to: About',
-    focus: 'body'
+    focus: {
+      selector: 'body',
+      wait: true
+    }
   }
 }
 ```
 
 ### visit.a11y.announce
 
+Type: `string` | `false` | `undefined`
+
 The text to announce after the new page was loaded. This is the final text after choosing the
 correct language from the [announcements](#announcements) option and filling in any placeholders.
 Modify it to read a custom announcement.
 
-Since the text can only be populated once the new page was fetched and its contents are available,
-the only place to inspect or modify this would be right before the `content:announce` hook.
+Since the text can only be populated once the new page was fetched and its contents are available, the only place to inspect or modify this would be right before the `content:announce` hook.
 
 ```js
 swup.hooks.before('content:announce', (visit) => {
@@ -229,9 +233,24 @@ swup.hooks.before('content:announce', (visit) => {
 
 ### visit.a11y.focus
 
-The element to receive focus after the new page was loaded, by default the `body`. Can be customized
-per visit. Set it to a selector `string` to select an element, or set it to `false` to not move the
-focus on this visit.
+Type: `Object` | `string` | `false`, Default: `Object`
+
+Customize which element to focus after the new page has loaded, and when. Defaults moving the focus to the `<body>` on `visit:end`:
+
+```js
+swup.hooks.on('visit:start', (visit) => {
+  if (someCondition()) {
+    visit.a11y.focus = {
+      /** focus <main> instead of <body> */
+      selector: 'main',
+      /** apply focus immeditely after 'content:replace' instead of waiting until 'visit:end' */
+      wait: false
+    };
+  }
+});
+```
+
+Set `visit.focus = false` to completely disable focus handling.
 
 ## Hooks
 
