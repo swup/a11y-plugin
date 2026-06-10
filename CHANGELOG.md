@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.2.0] - 2026-06-10
+
+- Add support for moving focus immediately after content was replaced
+
 ## [5.1.0] - 2026-05-07
 
 - Prioritize `h1` inside `main` for announcements
@@ -76,6 +80,7 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 
 - Initial release
 
+[5.2.0]: https://github.com/swup/a11y-plugin/releases/tag/5.2.0
 [5.1.0]: https://github.com/swup/a11y-plugin/releases/tag/5.1.0
 [5.0.0]: https://github.com/swup/a11y-plugin/releases/tag/5.0.0
 [4.5.2]: https://github.com/swup/a11y-plugin/releases/tag/4.5.2
