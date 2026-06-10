@@ -71,14 +71,14 @@ describe('SwupA11yPlugin', () => {
 		});
 
 		it('disables animations when reduced motion is preferred', async () => {
-			setMedia({ 'prefers-reduced-motion': 'reduce' });
+			setMedia({ prefersReducedMotion: 'reduce' });
 			await swup.hooks.call('visit:start', visit, undefined);
 			expect(visit.animation).toMatchObject({ animate: false });
 			expect(visit.scroll).toMatchObject({ animate: false });
 		});
 
 		it('ignores animations when reduced motion setting is disabled', async () => {
-			setMedia({ 'prefers-reduced-motion': 'reduce' });
+			setMedia({ prefersReducedMotion: 'reduce' });
 			plugin.options.respectReducedMotion = false;
 			await swup.hooks.call('visit:start', visit, undefined);
 			expect(visit.animation).toMatchObject({ animate: true });
