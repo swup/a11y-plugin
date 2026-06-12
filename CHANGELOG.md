@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.2.1] - 2026-06-12
+
+- Fix a regression introduced in `v5.2.0` where typescript types weren't exported correctly
+
 ## [5.2.0] - 2026-06-10
 
 - Add support for moving focus immediately after content was replaced
