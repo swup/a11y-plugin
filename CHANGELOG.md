@@ -84,6 +84,7 @@ plugin options, it's safe to upgrade, otherwise consult the readme.
 
 - Initial release
 
+[5.2.1]: https://github.com/swup/a11y-plugin/releases/tag/5.2.1
 [5.2.0]: https://github.com/swup/a11y-plugin/releases/tag/5.2.0
 [5.1.0]: https://github.com/swup/a11y-plugin/releases/tag/5.1.0
 [5.0.0]: https://github.com/swup/a11y-plugin/releases/tag/5.0.0
