@@ -64,7 +64,7 @@
     "@types/jsdom": "^28.0.1",
     "jsdom": "^29.1.1",
     "mock-match-media": "^1.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^5.0.3"
   },
   "peerDependencies": {
     "swup": "^4.0.0"
