@@ -33,10 +33,37 @@ describe('focus', () => {
 			expect(() => focusElement('input')).not.toThrow();
 		});
 
-		it('sets a tab index', () => {
+		it('does not set a tabindex on natively focusable elements', () => {
 			const [element] = create('<button></button>');
 			focusElement(element);
-			expect(element.tabIndex).toBe(-1);
+			expect(element.hasAttribute('tabindex')).toBe(false);
+		});
+
+		it('sets a tabindex on the body', () => {
+			create('');
+			focusElement(document.body);
+			expect(document.body.getAttribute('tabindex')).toBe('-1');
+		});
+
+		it('focuses anchors without href', () => {
+			const [element] = create('<a name="anchor">Anchor</a>');
+			focusElement(element);
+			expect(document.activeElement).toBe(element);
+			expect(element.getAttribute('tabindex')).toBe('-1');
+		});
+
+		it('keeps a custom negative tabindex', () => {
+			const [element] = create('<div tabindex="-2"></div>');
+			focusElement(element);
+			expect(document.activeElement).toBe(element);
+			expect(element.getAttribute('tabindex')).toBe('-2');
+		});
+
+		it('does not set a tabindex on disabled elements', () => {
+			const [element] = create('<button disabled></button>');
+			focusElement(element);
+			expect(document.activeElement).not.toBe(element);
+			expect(element.hasAttribute('tabindex')).toBe(false);
 		});
 
 		it('restores the previous tabindex', () => {

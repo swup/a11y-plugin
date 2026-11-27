@@ -6,18 +6,26 @@ export function focusElement(elementOrSelector: string | HTMLElement) {
 		el = elementOrSelector;
 	}
 
-	if (!(el instanceof HTMLElement)) return;
+	if (!(el instanceof HTMLElement) || el.matches(':disabled')) return;
 
-	// Apply a tabindex attribute to allow focusing non-focusable elements
-	const tabindex = el.getAttribute('tabindex');
+	/** Make implicit `tabindex === -1` explicit as an attribute */
+	if (el.tabIndex === -1) {
+		el.setAttribute('tabindex', '-1');
+	}
+
+	/** Try focussing */
+	el.focus({ preventScroll: true });
+
+	/** Focus worked or failed even though the element already has a tabindex attribute */
+	if (document.activeElement === el || el.hasAttribute('tabindex')) return;
+
+	/**
+	 * Handle elements that report a tabindex of 0 but are still not
+	 * focussable natively (e.g. <a name="foo"> without a href)
+	 */
 	el.setAttribute('tabindex', '-1');
 	el.focus({ preventScroll: true });
-	if (tabindex !== null) {
-		el.setAttribute('tabindex', tabindex);
-	} else {
-		// Removing the tabindex will reset screen reader position, so we'll keep it
-		// el.removeAttribute('tabindex');
-	}
+	if (document.activeElement !== el) el.removeAttribute('tabindex');
 }
 
 export function focusAutofocusElement(): boolean {
