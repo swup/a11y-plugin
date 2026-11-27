@@ -33,10 +33,16 @@ describe('focus', () => {
 			expect(() => focusElement('input')).not.toThrow();
 		});
 
-		it('sets a tab index', () => {
+		it('does not set a tabindex on natively focusable elements', () => {
 			const [element] = create('<button></button>');
 			focusElement(element);
-			expect(element.tabIndex).toBe(-1);
+			expect(element.hasAttribute('tabindex')).toBe(false);
+		});
+
+		it('sets a tabindex on the body', () => {
+			create('');
+			focusElement(document.body);
+			expect(document.body.getAttribute('tabindex')).toBe('-1');
 		});
 
 		it('restores the previous tabindex', () => {
