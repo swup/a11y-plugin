@@ -45,6 +45,27 @@ describe('focus', () => {
 			expect(document.body.getAttribute('tabindex')).toBe('-1');
 		});
 
+		it('focuses anchors without href', () => {
+			const [element] = create('<a name="anchor">Anchor</a>');
+			focusElement(element);
+			expect(document.activeElement).toBe(element);
+			expect(element.getAttribute('tabindex')).toBe('-1');
+		});
+
+		it('keeps a custom negative tabindex', () => {
+			const [element] = create('<div tabindex="-2"></div>');
+			focusElement(element);
+			expect(document.activeElement).toBe(element);
+			expect(element.getAttribute('tabindex')).toBe('-2');
+		});
+
+		it('does not set a tabindex on disabled elements', () => {
+			const [element] = create('<button disabled></button>');
+			focusElement(element);
+			expect(document.activeElement).not.toBe(element);
+			expect(element.hasAttribute('tabindex')).toBe(false);
+		});
+
 		it('restores the previous tabindex', () => {
 			const [element] = create('<button tabindex="4"></button>');
 			focusElement(element);
